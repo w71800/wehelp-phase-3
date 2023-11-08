@@ -3,7 +3,10 @@ import { ref, onMounted, defineProps, reactive, computed, toRefs } from 'vue'
 const { data } = defineProps(["data"])
 const { times, load, unit, rpe } = toRefs(data)
 const isKg = computed(()=>{
-  return unit.value == "kg"? true : false
+  if(unit){
+    return unit.value == "kg"? true : false  
+  }
+  
 })
 
 onMounted(()=>{

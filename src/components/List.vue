@@ -12,7 +12,7 @@
   .bottom
     .items
       .btn.add_item(@click="addItem") + 加入新項目
-      <Item v-for="item of items" :data="item" />
+      <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem"/>
 </template>
 
 <script setup>
@@ -38,6 +38,10 @@ function cleanEditing(e){
       item.classList.remove("editing")
     })
   }
+}
+function deleteItem(index){
+  items.value.splice(index, 1)
+
 }
 
 

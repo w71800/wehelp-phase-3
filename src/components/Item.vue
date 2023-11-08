@@ -1,7 +1,8 @@
 <script setup>
 import { ref, onMounted, computed, toRefs } from 'vue'
-const { data } = defineProps(["data"])
+const { data, index } = defineProps(["data", "index"])
 const { item, sets } = toRefs(data)
+const thisIndex  = ref(index)
 const isExpanding = ref(false)
 const excercises = ref(["壺鈴", "臀推", "單腳深蹲"])
 const recommends = ref([])
@@ -17,7 +18,12 @@ function expendSets(e){
   isExpanding.value = !isExpanding.value
 }
 function addSet(e){
-  let newSet = null
+  let newSet = {
+    "times": 10,
+    "load": 20,
+    "unit": "kg",
+    "rpe": 0
+  }
   if(data.sets.length != 0){
     newSet = JSON.parse(JSON.stringify(data.sets[data.sets.length - 1]))
   }else{
@@ -98,7 +104,9 @@ const vRecommendsCollapse = {
           :class="{ isChosen: i == chosenNum }") {{ recommend }}
     .sets_hint {{ sets.length }} 組
     .item_arrow(@click="expendSets")
-      img(src="https://www.freeiconspng.com/uploads/arrow-icon--myiconfinder-23.png" :class="{ expand: isExpanding }")
+      img(src="/src/assets/img/arrow.png" :class="{ expand: isExpanding }")
+    .item_delete(@click="$emit('deleteItem', thisIndex)")
+      img(src="/src/assets/img/delete.png")
   .item_sets(:class="{ expand: isExpanding }")
     <Set v-for="set of sets" :data="set" @setChange=""/>
     .btn.add_set(@click="addSet") + 加入一組
@@ -171,6 +179,15 @@ ul.item_recommends
   &.expand
     height: auto
     overflow: visible
+.item_delete
+  cursor: pointer
+  // border: 1px solid #000
+  position: absolute
+  top: 5px
+  right: 15px
+  img
+    width: 15px
+    height: 15px
 .btn
   display: block
   width: 80px
