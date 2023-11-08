@@ -1,0 +1,101 @@
+<template lang="pug">
+#list(@click.self="cleanEditing")
+  .corner
+  .top
+    .date 
+      span 日期：
+      span {{ date }}
+    .part
+      span 部位：
+      span {{ part }}
+  hr
+  .bottom
+    .items
+      .btn.add_item(@click="addItem") + 加入新項目
+      <Item v-for="item of items" :data="item" />
+</template>
+
+<script setup>
+import { ref, onMounted, isRef, toRefs } from 'vue'
+let { data } = defineProps({
+  data: Object || null
+ })
+const { date, part, items } = toRefs(data)
+
+function addItem(){
+  let item = {
+    item: null,
+    sets: [],
+  }
+
+  items.value.push(item)
+}
+function cleanEditing(e){
+  let isEditing = document.querySelectorAll(".wrapper.editing")
+
+  if(isEditing.length != 0) {
+    isEditing.forEach( item => {
+      item.classList.remove("editing")
+    })
+  }
+}
+
+
+</script>
+
+
+<style lang="sass" scoped>
+#list
+  width: 320px
+  // height: 650px
+  background-color: $color_list
+  padding: 20px
+  overflow: hidden
+  // border: 2px solid $color_primary
+.date
+  margin-bottom: 10px
+.top
+  &+hr
+    width: 80%
+    margin: 20px auto
+    margin-bottom: 10px
+.btn
+  display: block
+  width: 100px
+  text-align: center
+  margin: 0 auto
+  color: $color_secondary
+  cursor: pointer
+  &.add_item
+    margin-bottom: 10px
+
+#list
+  // &::before, &::after
+  //   content: ''
+  //   position: absolute
+  //   bottom: 10px
+  //   width: 40%
+  //   height: 10px
+  //   box-shadow: 0 5px 14px rgba(0,0,0,.7)
+  //   z-index: 1
+  //   // transition: all .3s ease-in-out
+  // &::before
+  //   left: 15px
+  //   transform: skew(-5deg) rotate(-5deg)
+  // &::after
+  //   right: 15px
+  //   transform: skew(5deg) rotate(5deg)
+#list .corner
+  width: var(--corner-size)
+  height: var(--corner-size)
+  border-left: var(--corner-border) solid darken($color_list, 20)
+  border-top: var(--corner-border) solid $color_primary
+  border-right: var(--corner-border) solid $color_primary
+  border-bottom: var(--corner-border) solid darken($color_list, 20)
+  position: absolute
+  top: -1px
+  right: -1px
+  box-shadow: -2px 3px 5px 2px rgba(black, .4)
+  
+
+</style>

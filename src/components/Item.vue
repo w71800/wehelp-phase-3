@@ -1,0 +1,200 @@
+<script setup>
+import { ref, onMounted, computed, toRefs } from 'vue'
+const { data } = defineProps(["data"])
+const { item, sets } = toRefs(data)
+const isExpanding = ref(false)
+const excercises = ref(["壺鈴", "臀推", "單腳深蹲"])
+const recommends = ref([])
+const chosenNum = ref(0)
+
+const isEmpty = computed(() => {
+  if(!item.value){
+    return true
+  }
+})
+
+function expendSets(e){
+  isExpanding.value = !isExpanding.value
+}
+function addSet(e){
+  let newSet = null
+  if(data.sets.length != 0){
+    newSet = JSON.parse(JSON.stringify(data.sets[data.sets.length - 1]))
+  }else{
+    console.log("要放之前的最後一組");
+  }
+
+  data.sets.push(newSet)
+}
+function fillItem(recommend){
+  item.value = recommend
+}
+function setRecommend(e){
+  item.value = recommends.value[chosenNum.value]
+  e.target.blur()
+}
+function changeRecommend(e){
+  console.log(e.key);
+  if(e.key == "ArrowUp") {
+    chosenNum.value --
+    if(chosenNum.value == -1) chosenNum.value = recommends.value.length - 1
+  }
+  else if(e.key == "ArrowDown"){
+    chosenNum.value ++
+    if(chosenNum.value == recommends.value.length) {
+      chosenNum.value = 0
+    }
+  } 
+  
+  
+}
+const vRecommendsCollapse = {
+  mounted: (el) => { 
+    let input = el
+    let recommendsEl = input.nextElementSibling
+
+    input.onfocus = () => {
+      recommendsEl.classList.add("expand")
+    }
+    input.onblur = () => {
+      setTimeout(()=>{
+        recommendsEl.classList.remove("expand")
+      }, 30)
+    }
+    input.oninput = () => {
+      let result = Array.from(excercises.value).filter( recommend => recommend.includes(input.value) )
+      recommends.value = result
+    }
+  }
+}
+
+// onMounted(()=>{
+//   document.onkeydown = (e) => {
+//     console.log(e.key);
+//   }
+// })
+
+
+
+</script>
+
+<template lang="pug">
+#item
+  .item_info
+    .item_name
+      input.item_input(
+        v-model="item" 
+        placeholder="請輸入項目" 
+        :class="{ isEmpty: isEmpty }" 
+        v-RecommendsCollapse
+        @keydown.enter="setRecommend"
+        @keydown.down="changeRecommend"
+        @keydown.up="changeRecommend"
+        )
+      ul.item_recommends()
+        li.recommend(
+          v-for="(recommend, i) of recommends"
+          @click="fillItem(recommend)"
+          :class="{ isChosen: i == chosenNum }") {{ recommend }}
+    .sets_hint {{ sets.length }} 組
+    .item_arrow(@click="expendSets")
+      img(src="https://www.freeiconspng.com/uploads/arrow-icon--myiconfinder-23.png" :class="{ expand: isExpanding }")
+  .item_sets(:class="{ expand: isExpanding }")
+    <Set v-for="set of sets" :data="set" @setChange=""/>
+    .btn.add_set(@click="addSet") + 加入一組
+</template>
+
+
+
+<style lang="sass" scoped>
+#item
+  // border: 1px solid #000
+  margin-bottom: 10px
+
+.item_info
+  border: 1px solid #000
+  padding: 10px 20px
+  margin-bottom: 10px
+  border-radius: 30px
+  box-shadow: 0px 3px 10px 0px rgba(#888, .7)
+.item_name
+.item_input
+  height: 25px
+  background-color: transparent
+  font-size: 1rem
+  padding: 3px 5px
+  outline: none
+  border: none
+  &.isEmpty
+    border: 1px solid #000
+ul.item_recommends
+  width: 100%
+  // 收起來用的
+  overflow: hidden
+  height: 0
+  margin-top: 5px
+  .recommend
+    list-style: none
+    border-top: 1px solid #000
+    cursor: pointer
+    background-color: #fff
+    font-size: 0.8rem
+    padding: 1px 10px
+    z-index: 30
+    &:hover, &.isChosen
+      background-color: $color_secondary 
+      color: #fff
+    
+
+.sets_hint
+  font-size: 0.8rem
+  text-align: right
+  color: $color_secondary
+.item_arrow
+  position: absolute
+  bottom: 0
+  left: 50%
+  transform: translateX(-50%)
+  cursor: pointer
+  & img
+    transition: .3s
+    width: 20px
+    height: 20px
+    transform: rotate(-90deg)
+  & img.expand
+    transform: rotate(90deg)
+.item_sets
+  overflow: hidden 
+  height: 0
+  // border: 1px solid #000
+  z-index: 1
+  &.expand
+    height: auto
+    overflow: visible
+.btn
+  display: block
+  width: 80px
+  margin: 0 auto
+  text-align: center
+  color: rgba($color_secondary, .4)
+  font-weight: 500
+  font-size: 0.8rem
+  cursor: pointer
+  &.add_set
+
+
+// function
+input.item_input
+  &+ul.expand
+    overflow: visible
+#item
+  .wrapper.editing
+    input
+      border: 1px solid #000 
+      background-color: #fff 
+    .buttons
+      display: block
+    &.rpe
+      input[type="range"]
+        display: inline-block
+</style>

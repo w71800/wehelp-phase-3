@@ -1,0 +1,44 @@
+{
+	"data": [
+    {
+      "date": "2023 / 11 / 06",
+      "part": "腿",
+      "items": [
+        {
+          "item": "深蹲（槓）",
+          "sets": [
+            {
+              "times": 12,
+              "load": 20,
+              "unit": "kg",
+              "rpe": 6
+            },
+            {
+              "times": 12,
+              "load": 20,
+              "unit": "kg",
+              "rpe": 8
+            }
+          ]
+        },
+        {
+          "item": "硬舉（槓）",
+          "sets": [
+            {
+              "times": 12,
+              "load": 5,
+              "unit": "kg",
+              "rpe": 4
+            },
+            {
+              "times": 12,
+              "load": 7.5,
+              "unit": "kg",
+              "rpe": 6
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
