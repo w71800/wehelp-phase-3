@@ -1,7 +1,6 @@
 const express = require("express")
 const router = express.Router()
 const mysql = require("mysql2")
-const { Value } = require("sass")
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
@@ -11,6 +10,8 @@ const pool = mysql.createPool({
 })
 
 const connection = pool.promise()
+router.use(express.json())
+
 
 router.get("/", async (req, res)=>{
   let response = null
@@ -18,7 +19,7 @@ router.get("/", async (req, res)=>{
     let query = `SELECT * from lists`
     let [ row ] = await connection.query(query)
     
-    response = { data: row[0] }
+    response = { data: row[1] }
   }catch(e){
     response = { error: e }
   }
@@ -27,44 +28,8 @@ router.get("/", async (req, res)=>{
 })
 
 router.post("/", async (req, res)=>{
-  let data = {
-    date: "2023 / 11 / 05",
-    part: "肩",
-    items: [{
-      "item": "深蹲（槓）",
-      "sets": [
-        {
-          "times": 12,
-          "load": 20,
-          "unit": "kg",
-          "rpe": 6
-        },
-        {
-          "times": 12,
-          "load": 20,
-          "unit": "kg",
-          "rpe": 8
-        }
-      ]
-    },
-    {
-      "item": "硬舉（槓）",
-      "sets": [
-        {
-          "times": 12,
-          "load": 5,
-          "unit": "kg",
-          "rpe": 4
-        },
-        {
-          "times": 12,
-          "load": 7.5,
-          "unit": "kg",
-          "rpe": 6
-        }
-      ]
-    }] // 用 JSON 格式存進資料庫中
-  }
+  let data = req.body
+  
   let response = null
   try{
     let query = "INSERT INTO lists(date, part, items) values(?, ?, ?)"
@@ -77,8 +42,6 @@ router.post("/", async (req, res)=>{
 
     response = { error: e }
   }
-  
-
   res.json(response)
 })
 

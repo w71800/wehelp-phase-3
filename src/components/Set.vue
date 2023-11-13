@@ -1,7 +1,8 @@
 <script setup>
 import { ref, onMounted, defineProps, reactive, computed, toRefs } from 'vue'
-const { data } = defineProps(["data"])
+const { data, index } = defineProps(["data", "index"])
 const { times, load, unit, rpe } = toRefs(data)
+const thisIndex = ref(index)
 const isKg = computed(()=>{
   if(unit){
     return unit.value == "kg"? true : false  
@@ -67,6 +68,8 @@ function changeUnit(e){
 
 <template lang="pug">
 .set
+  .set_delete(@click="$emit('deleteSet', thisIndex)")
+    img(src="/src/assets/img/delete.png")
   form
     .wrapper.times
       label(for="times") 次數：
@@ -116,6 +119,15 @@ function changeUnit(e){
     height: 1px
     border: none
     margin-top: 10px
+.set_delete
+  position: absolute
+  right: 50px
+  top: 0
+  z-index: 20
+  cursor: pointer
+  img
+    width: 15px
+    height: 15px
 .wrapper
   display: flex
   align-items: center

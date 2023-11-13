@@ -4,11 +4,13 @@ import router from './router'
 import Set from './components/Set.vue'
 import Item from './components/Item.vue'
 import List from './components/List.vue'
+import Nav from './components/Nav.vue'
 
 const app = createApp(App) // 放入根元件，創造出一個應用實體
 app.component('Set', Set)
 app.component('Item', Item)
 app.component('List', List)
+app.component('Nav', Nav)
 
 app.use(router)
 

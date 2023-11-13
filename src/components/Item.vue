@@ -7,7 +7,6 @@ const isExpanding = ref(false)
 const excercises = ref(["壺鈴", "臀推", "單腳深蹲"])
 const recommends = ref([])
 const chosenNum = ref(0)
-
 const isEmpty = computed(() => {
   if(!item.value){
     return true
@@ -17,6 +16,7 @@ const isEmpty = computed(() => {
 function expendSets(e){
   isExpanding.value = !isExpanding.value
 }
+
 function addSet(e){
   let newSet = {
     "times": 10,
@@ -32,13 +32,20 @@ function addSet(e){
 
   data.sets.push(newSet)
 }
+
+function deleteSet(arg){
+  sets.value.splice(arg, 1)
+}
+
 function fillItem(recommend){
   item.value = recommend
 }
+
 function setRecommend(e){
   item.value = recommends.value[chosenNum.value]
   e.target.blur()
 }
+
 function changeRecommend(e){
   console.log(e.key);
   if(e.key == "ArrowUp") {
@@ -54,6 +61,7 @@ function changeRecommend(e){
   
   
 }
+
 const vRecommendsCollapse = {
   mounted: (el) => { 
     let input = el
@@ -108,7 +116,7 @@ const vRecommendsCollapse = {
     .item_delete(@click="$emit('deleteItem', thisIndex)")
       img(src="/src/assets/img/delete.png")
   .item_sets(:class="{ expand: isExpanding }")
-    <Set v-for="set of sets" :data="set" @setChange=""/>
+    <Set v-for="(set, index) of sets" :data="set" :index="index" @delete-set="deleteSet"/>
     .btn.add_set(@click="addSet") + 加入一組
 </template>
 

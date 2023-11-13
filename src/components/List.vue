@@ -13,10 +13,12 @@
     .items
       .btn.add_item(@click="addItem") + 加入新項目
       <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem"/>
+  .submit(@click="submit") 儲存
 </template>
 
 <script setup>
 import { ref, onMounted, isRef, toRefs } from 'vue'
+const apiUrl = import.meta.env.VITE_SERVER_URL
 let { data } = defineProps({
   data: Object || null
  })
@@ -30,6 +32,7 @@ function addItem(){
 
   items.value.push(item)
 }
+
 function cleanEditing(e){
   let isEditing = document.querySelectorAll(".wrapper.editing")
 
@@ -39,11 +42,31 @@ function cleanEditing(e){
     })
   }
 }
+
 function deleteItem(index){
   items.value.splice(index, 1)
 
 }
 
+function submitList(){
+  let submitData = data
+  let endpoint = apiUrl + "api/list"
+  return fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(submitData)
+  })
+}
+
+async function submit(){
+  let yes = confirm("確定要送出嗎？")
+  if(!yes) return
+
+  let result = await submitList()
+  console.log(result);
+}
 
 </script>
 
@@ -101,5 +124,25 @@ function deleteItem(index){
   right: -1px
   box-shadow: -2px 3px 5px 2px rgba(black, .4)
   
+.submit
+  border: 1px solid #000
+  position: absolute
+  right: 5px
+  bottom: 5px
+  font-size: 0.5rem
+  font-weight: 500
+  color: #fff
+  background-color: $color_primary
+  border: 2px solid $color_primary
+  padding: 3px 5px
+  cursor: pointer
+  border-radius: 3px
+
+// function
+.submit:hover
+  color: $color_primary
+  background-color: #fff
+  border: 2px dashed $color_primary
+
 
 </style>

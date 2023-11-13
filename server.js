@@ -1,9 +1,14 @@
 const express = require('express')
 const app = express()
+const cors = require('cors')
 const listApi = require('./api/list.js')
+const authApi = require('./api/auth.js')
+
 
 app.use(express.static('dist'))
+app.use(cors())
 app.use("/api/list", listApi)
+app.use("/api/auth", authApi)
 
 
 app.get("/", (req, res) => {
