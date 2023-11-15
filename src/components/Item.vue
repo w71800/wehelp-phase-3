@@ -1,10 +1,13 @@
 <script setup>
-import { ref, onMounted, computed, toRefs } from 'vue'
+import { ref, computed, toRefs, inject } from 'vue'
 const { data, index } = defineProps(["data", "index"])
 const { item, sets } = toRefs(data)
 const thisIndex  = ref(index)
 const isExpanding = ref(false)
-const excercises = ref(["壺鈴", "臀推", "單腳深蹲"])
+const histories = inject("histories")
+const excercises = computed(()=>{
+  return histories.value.map( history => history.item )
+})
 const recommends = ref([])
 const chosenNum = ref(0)
 const isEmpty = computed(() => {
@@ -19,15 +22,16 @@ function expendSets(e){
 
 function addSet(e){
   let newSet = {
-    "times": 10,
+    "times": 12,
     "load": 20,
     "unit": "kg",
-    "rpe": 0
+    "rpe": 6
   }
   if(data.sets.length != 0){
     newSet = JSON.parse(JSON.stringify(data.sets[data.sets.length - 1]))
   }else{
-    console.log("要放之前的最後一組");
+    let history = histories.value.filter( history => history.item == item.value )[0]
+    if(history) newSet = history.last
   }
 
   data.sets.push(newSet)
@@ -81,14 +85,6 @@ const vRecommendsCollapse = {
     }
   }
 }
-
-// onMounted(()=>{
-//   document.onkeydown = (e) => {
-//     console.log(e.key);
-//   }
-// })
-
-
 
 </script>
 

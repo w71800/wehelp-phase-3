@@ -1,11 +1,12 @@
 <template lang="pug">
 .container
-  h1 {{ hello }}
+  h1 HELLO {{ userData.username }}
 </template>
 
 <script setup>
-import { reactive, ref, isRef, isReactive, toRefs } from 'vue'
-let hello = ref("Dashboard")
+import { reactive, ref, toRefs } from 'vue'
+let { userData } = defineProps(["userData"])
+
 function getList(){
   console.log("getList");
   return fetch("http://localhost:3000/api/list")

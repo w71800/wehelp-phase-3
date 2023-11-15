@@ -1,0 +1,91 @@
+{
+  "data": [
+  {
+    "id": 1,
+    "items": [
+      {
+        "item": "深蹲（槓）",
+        "sets": [
+            {
+              "rpe": 6,
+              "load": 20,
+              "unit": "kg",
+              "times": 12
+            },
+            {
+              "rpe": 8,
+              "load": 20,
+              "unit": "kg",
+              "times": 12
+            }
+        ]
+      },
+      {
+        "item": "硬舉（槓）",
+        "sets": [
+            {
+              "rpe": 4,
+              "load": 5,
+              "unit": "kg",
+              "times": 12
+            },
+            {
+              "rpe": 6,
+              "load": 7.5,
+              "unit": "kg",
+              "times": 12
+            }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "items": [
+      {
+        "item": "硬舉（槓）",
+        "sets": [
+            {
+              "rpe": 5,
+              "load": 6,
+              "unit": "kg",
+              "times": 12
+            },
+            {
+              "rpe": 8,
+              "load": 8,
+              "unit": "kg",
+              "times": 10
+            }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "items": [
+      {
+        "item": "深蹲（槓）",
+        "sets": [
+            {
+              "rpe": 6,
+              "load": 20,
+              "unit": "kg",
+              "times": 12
+            },
+            {
+              "rpe": 8,
+              "load": 20,
+              "unit": "kg",
+              "times": 12
+            }
+        ]
+      }
+    ]
+  },
+  {
+      "id": 9,
+      "items": []
+  }
+]
+}

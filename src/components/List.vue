@@ -17,12 +17,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, isRef, toRefs } from 'vue'
+import { inject, toRefs } from 'vue'
 const apiUrl = import.meta.env.VITE_SERVER_URL
 let { data } = defineProps({
   data: Object || null
  })
 const { date, part, items } = toRefs(data)
+const userData = inject("userData")
 
 function addItem(){
   let item = {
@@ -49,8 +50,8 @@ function deleteItem(index){
 }
 
 function submitList(){
-  let submitData = data
-  let endpoint = apiUrl + "api/list"
+  let submitData = { ...data, userId: userData.value.id }
+  let endpoint = apiUrl + "/api/list"
   return fetch(endpoint, {
     method: "POST",
     headers: {

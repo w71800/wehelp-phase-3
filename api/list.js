@@ -32,9 +32,10 @@ router.post("/", async (req, res)=>{
   
   let response = null
   try{
-    let query = "INSERT INTO lists(date, part, items) values(?, ?, ?)"
-    let values = [ data.date, data.part, JSON.stringify(data.items) ]
+    let query = `INSERT INTO lists(user_id, date, part, items) values(?, ?, ?, ?)`
+    let values = [data.userId, data.date, data.part, JSON.stringify(data.items) ]
     let result = await connection.query(query, values)
+
 
     response = { ok: result }
   }catch(e){

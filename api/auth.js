@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 const secretKey = 'secret'
+const multer = require('multer')
 const mysql = require("mysql2")
 const pool = mysql.createPool({
   host: 'localhost',
@@ -13,28 +14,29 @@ const pool = mysql.createPool({
 
 const connection = pool.promise()
 router.use(express.urlencoded({ extended: true }))
-// router.use(express.json())
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
 
 async function authHandler(req, res){
   let response = null
   
   // 處理登入
   if(req.method == "PUT"){
-    let { id, username, email, password } = req.body
+    let { email, password } = req.body
     let query = `SELECT * from users WHERE email = ? and password = ?`
     let values = [ email, password ]
     
     let [ rows ] = await connection.query(query, values)
     if(rows.length !== 0){
+      let { password, ...rest } = rows[0]
+      console.log(rest);
       let token = jwt.sign({ 
-        userId: id, 
-        username, 
-        password, 
         email, 
-        category: rows.category }, secretKey, { expiresIn: '1h' });
-      response = JSON.stringify({ ok: true, token })
+        ...rest }, secretKey, { expiresIn: '30d' });
+      
+      response = JSON.stringify({ ok: true, token, msg: "登入成功" })
     }else{
-      response = JSON.stringify({ msg: "無此使用者" })
+      response = JSON.stringify({ msg: "無此使用者或密碼錯誤" })
     }
     try{
     }catch(e){
@@ -49,7 +51,7 @@ async function authHandler(req, res){
       let values = [ username, email, password, category ]
 
       let result = await connection.query(query, values)
-      response = JSON.stringify(result)
+      response = JSON.stringify({ ok: true })
     }catch(e){
       response = e.errno == 1062? JSON.stringify({ msg: "已有此信箱" }) : JSON.stringify({ msg: e })
     }
@@ -59,26 +61,17 @@ async function authHandler(req, res){
       let token = req.headers['authorization']
       jwt.verify(token, secretKey, (err, decode) => {
         if(err){
-          response = { msg: err }
+          response = JSON.stringify({ msg: err })
         }
-
-        response = decode
+        response = JSON.stringify(decode)
       })
-      // let query = `SELECT * from users WHERE email = ? and password = ?`
-      // // let values = [ email, password ]
-      // let values = [ "admin@admin", "0000" ]
-      // let [ rows ] = await connection.query(query, values)
-
     }catch(e){
-
+      response = JSON.stringify({ msg: e })
     }
   }
-  
   res.send(response)
 }
 
-
-
-router.route("/").all(authHandler)
+router.route("/").all(upload.single('file'), authHandler)
 
 module.exports = router
