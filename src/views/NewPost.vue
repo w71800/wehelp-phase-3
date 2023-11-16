@@ -4,15 +4,16 @@
 </template>
   
 <script setup>
-import { onMounted, provide, ref } from 'vue'
-import { useRouter } from 'vue-router';
+import { onBeforeMount, onMounted, provide, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router';
+const route = useRoute()
+const router = useRouter()
 const { userData } = defineProps(["userData"])
 const histories = ref(null)
+const part = route.params.part
 provide("histories", histories)
 
 
-let part = prompt("今天想練什麼部位？")
-if(!part) useRouter().push("/dashboard")
 
 function getDate(){
   let year = new Date().getFullYear()
@@ -31,7 +32,7 @@ function newList(date, part){
   return listObj
 }
 function getHistories(){
-  let endPoint = `${import.meta.env.VITE_SERVER_URL}/api/history?part=${part}&id=${userData.id}`
+  let endPoint = `${ import.meta.env.VITE_SERVER_URL }/api/history?part=${ part }&id=${ userData.id }`
   return fetch(endPoint)
   .then( res => res.json() )
   .then( data => {
@@ -39,6 +40,11 @@ function getHistories(){
   }) 
 }
 
+onBeforeMount(()=>{
+  if(!userData || !localStorage.token){
+    // router.push("/auth")
+  }
+})
 
 // 初始化
 onMounted(() => {

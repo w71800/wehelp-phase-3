@@ -121,9 +121,20 @@ async function submit(){
   border-right: var(--corner-border) solid $color_primary
   border-bottom: var(--corner-border) solid darken($color_list, 20)
   position: absolute
-  top: -1px
-  right: -1px
+  top: 0px
+  right: 0px
   box-shadow: -2px 3px 5px 2px rgba(black, .4)
+  // box-shadow: -5px 5px 8px 4px rgba(black, .4)
+  &::before
+    // content: ""
+    // display: block
+    // width: 50px
+    // height: 50px
+    // position: absolute
+    // box-shadow: -3px 3px 5px 2px rgba(black, .4)
+    // top: -25px
+    // left: -25px
+    // background-color: transparent 
   
 .submit
   border: 1px solid #000

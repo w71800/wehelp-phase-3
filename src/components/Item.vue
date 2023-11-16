@@ -5,9 +5,7 @@ const { item, sets } = toRefs(data)
 const thisIndex  = ref(index)
 const isExpanding = ref(false)
 const histories = inject("histories")
-const excercises = computed(()=>{
-  return histories.value.map( history => history.item )
-})
+const excercises = computed( () => histories.value.map( history => history.item ) )
 const recommends = ref([])
 const chosenNum = ref(0)
 const isEmpty = computed(() => {
@@ -30,8 +28,8 @@ function addSet(e){
   if(data.sets.length != 0){
     newSet = JSON.parse(JSON.stringify(data.sets[data.sets.length - 1]))
   }else{
-    let history = histories.value.filter( history => history.item == item.value )[0]
-    if(history) newSet = history.last
+    let historyObj = histories.value.filter( history => history.item == item.value )[0]
+    if(historyObj) newSet = historyObj.last
   }
 
   data.sets.push(newSet)

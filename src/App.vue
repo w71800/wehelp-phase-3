@@ -5,7 +5,7 @@ const userData = ref(null)
 provide("userData", userData)
 
 function updateUserData(e){
-  const endPoint = import.meta.env.VITE_SERVER_URL + "api/auth"
+  const endPoint = import.meta.env.VITE_SERVER_URL + "/api/auth"
   return fetch(endPoint, {
     method: "GET",
     headers: {

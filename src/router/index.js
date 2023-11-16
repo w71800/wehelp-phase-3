@@ -3,6 +3,7 @@ import Main from '../views/Main.vue'
 import NewPost from '../views/NewPost.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Auth from '../views/Auth.vue'
+import Dialog from '../views/Dialog.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,6 +12,7 @@ const router = createRouter({
     { path: "/newpost", component: NewPost },
     { path: "/dashboard", component: Dashboard },
     { path: "/auth", component: Auth },
+    { path: "/dialog", component: Dialog },
   ]
 })
 

@@ -53,7 +53,7 @@ const emit = defineEmits(["signinSuccess"])
 function signinSubmit(e){
     let signinForm = document.querySelector("form[type='signin']")
     
-    const endPoint = import.meta.env.VITE_SERVER_URL + "api/auth"
+    const endPoint = import.meta.env.VITE_SERVER_URL + "/api/auth"
     const formData = new FormData(signinForm)
     return fetch(endPoint, {
       method: "PUT",
@@ -82,7 +82,7 @@ function signinSubmit(e){
 function signupSubmit(e){
   let form = document.querySelector("form[type='signup']")
     
-  const endPoint = import.meta.env.VITE_SERVER_URL + "api/auth"
+  const endPoint = import.meta.env.VITE_SERVER_URL + "/api/auth"
   const formData = new FormData(form)
   return fetch(endPoint, {
       method: "POST",
