@@ -37,7 +37,7 @@ router.post("/", async (req, res)=>{
     let result = await connection.query(query, values)
 
 
-    response = { ok: result }
+    response = { ok: true }
   }catch(e){
     console.log(e);
 

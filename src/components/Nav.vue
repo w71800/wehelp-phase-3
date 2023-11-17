@@ -1,10 +1,22 @@
 <template lang="pug">
-#nav 哈囉
+#nav
+.signout(@click="signOut") 登出
 
 </template>
 
 <script setup>
+import { inject } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter()
 
+const userData = inject("userData")
+function signOut(){
+  userData.value = null
+  localStorage.userData = null
+  localStorage.token = null
+
+  router.push("/auth")
+}
 
 </script>
 

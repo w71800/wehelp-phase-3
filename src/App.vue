@@ -30,7 +30,7 @@ onBeforeUnmount(()=>{
 <template lang="pug">
 Suspense
   router-view(:userData="userData" @signin-success="updateUserData")
-//- Nav
+Nav
 </template>
 
 <style lang="sass">

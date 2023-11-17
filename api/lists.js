@@ -13,6 +13,7 @@ const connection = pool.promise()
 router.use(express.json())
 
 async function getListsHandler(req, res){
+  console.log(req.query);
   /**
    * 幾個參數：
    * 1. 時間期間：week（預設）、biweeks、month、固定時間範圍
@@ -45,6 +46,7 @@ async function getListsHandler(req, res){
     data,
     nextPage: rows.length < 13? null : page + 1
   }
+  console.log(response);
   return res.json(response)
 }
 

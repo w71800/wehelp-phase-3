@@ -18,6 +18,8 @@
 
 <script setup>
 import { inject, toRefs } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const apiUrl = import.meta.env.VITE_SERVER_URL
 let { data } = defineProps({
   data: Object || null
@@ -59,14 +61,17 @@ function submitList(){
     },
     body: JSON.stringify(submitData)
   })
+  .then( res => res.json() )
 }
 
 async function submit(){
   let yes = confirm("確定要送出嗎？")
   if(!yes) return
 
-  let result = await submitList()
-  console.log(result);
+  let response = await submitList()
+  if(response.ok){
+    router.push("/dashboard")
+  }
 }
 
 </script>

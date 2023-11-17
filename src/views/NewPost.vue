@@ -41,6 +41,10 @@ function getHistories(){
 }
 
 onBeforeMount(()=>{
+  if(!part){
+    alert("沒有輸入部位，請重新輸入！")
+    router.push("/dialog")
+  }
   if(!userData || !localStorage.token){
     // router.push("/auth")
   }
