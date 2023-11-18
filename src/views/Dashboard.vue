@@ -66,17 +66,17 @@ function getLists(mode){
     } )
     .then( lists => {
       data.value = data.value.concat(lists)
+      return data.value
     })
     .catch((e)=>{
     })
 }
 
 onMounted( async () => {
-  data.value = data.value.concat(await getLists())
+  data.value = await getLists()
 })
 
 onBeforeMount( () => {
-  console.log("object");
   if(!userData || !localStorage.token){
     router.push("/auth")
   }

@@ -46,7 +46,7 @@ async function getListsHandler(req, res){
     data,
     nextPage: rows.length < 13? null : page + 1
   }
-  console.log(response);
+  // console.log(response);
   return res.json(response)
 }
 
