@@ -1,16 +1,29 @@
 <template lang="pug">
-#nav
-.signout(@click="signOut") 登出
+#nav(@click.self="toggleNav")
+  .container
+    .option.signout(@click="signOut" v-if="userData" ) 登出
+    .option.signin(@click="signIn" v-if="!userData" ) 登入
+    .option(v-if="userData") 
+      RouterLink(to="/dashboard") 管理紀錄
+    .option(v-if="userData") 
+      RouterLink(to="/dialog") 動滋一下
 
 </template>
 
 <script setup>
-import { inject } from "vue";
-import { useRouter } from "vue-router";
+import { inject, onMounted, reactive, ref } from "vue";
+import { useRouter, useRoute, onBeforeRouteLeave } from "vue-router";
 const router = useRouter()
+const route = useRoute()
+const navStatus = reactive({
+  now: route.path,
+})
 
 const userData = inject("userData")
 function signOut(){
+  let yes = confirm("確定要登出了嗎？")
+  if(!yes) return
+  
   userData.value = null
   localStorage.userData = null
   localStorage.token = null
@@ -18,15 +31,73 @@ function signOut(){
   router.push("/auth")
 }
 
+function toggleNav(e){
+  let navEl = e.target
+  navEl.classList.toggle("expand")
+}
+
+onMounted(()=>{
+  let container = document.querySelector("#nav .container")
+  let root = document.documentElement
+  let defaultHeight = window.getComputedStyle(container).height
+  root.style.setProperty("--default-height", defaultHeight)
+  container.style.height = "0px"
+
+})
+
+onBeforeRouteLeave((to, from, next)=>{
+  console.log("object");
+  navStatus.now = to.path
+
+  next()
+})
+
 </script>
 
 <style lang="sass" scoped>
+:root
+  --default-height: 0px
 #nav
   border: 1px solid #000
   position: fixed
-  right: 0
-  top: 50%
+  right: 20px
+  bottom: 20px
+  width: 50px
+  height: 50px
+  border-radius: 50%
+  background-color: #fff
+  
+.container
+  display: block
   width: 100px
-  height: 100px
+  height: auto
+  transform: translate(-25px, -100%)
+  // border: 1px solid #000
+  transition: .3s
+  overflow: hidden
+.option
+  // border: 1px solid #000
+  color: #fff
+  margin-bottom: 20px
+  text-align: center
+  cursor: pointer
+  a
+    text-decoration: none
+    color: #fff
+
+#nav
+  .option:hover, .option:hover a
+    color: $color_list
+  
+
+#nav.expand
+  overflow: visible
+  .container
+    height: var(--default-height) !important
+  .option
+    &.hide
+      display: none
+      
+
 
 </style>

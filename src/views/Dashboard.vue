@@ -90,11 +90,17 @@ $gap_width: 20px
 
 .container
   display: block
-  max-width: 1200px
+button
+  cursor: pointer
+  padding: 5px 8px
+  border-radius: 3px
+  border: none
 #panel
   display: flex
   margin-bottom: 20px
-
+  button
+    padding: 3px 5px
+    margin-left: 10px
 #board
   display: flex
   justify-content: flex-start
@@ -125,10 +131,6 @@ $gap_width: 20px
   .sub.date
     margin-top: -10px
   button.nextPage
-    cursor: pointer
-    padding: 5px 8px
-    border-radius: 3px
-    border: none
     position: absolute
     left: 50%
     bottom: -50px
@@ -138,7 +140,7 @@ $gap_width: 20px
   button.nextPage
     &.inactive
       color: grey
-      background-color: darken(grey, 25)
+      background-color: lignten(grey, 25)
       // cursor: not-allowed
       pointer-events: none
   .list
