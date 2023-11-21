@@ -11,7 +11,11 @@ const router = createRouter({
   routes: [
     { path: "/", component: Main },
     { path: "/newpost", component: NewPost },
-    { path: "/dashboard", component: Dashboard },
+    { 
+      path: "/dashboard",
+      component: Dashboard,
+      name: "dashboard"
+    },
     { path: "/auth", component: Auth },
     { path: "/dialog", component: Dialog },
   ]

@@ -15,11 +15,12 @@ router.use(express.json())
 
 router.get("/", async (req, res)=>{
   let response = null
+  let { id } = req.query
   try{
-    let query = `SELECT * from lists`
-    let [ row ] = await connection.query(query)
+    let query = `SELECT * from lists WHERE id = ?`
+    let [ row ] = await connection.query(query, id)
     
-    response = { data: row[1] }
+    response = { data: row[0] }
   }catch(e){
     response = { error: e }
   }

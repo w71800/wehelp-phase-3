@@ -21,7 +21,7 @@
     button.filter(@click="getLists('filter')") 搜尋
   #board
     .status(v-if="data.length == 0") 沒有符合條件的運動紀錄
-    .list(v-for="list of data")
+    .list(v-for="list of data" @click="showData(list.id)")
       img(src="../assets/img/icon.png")
       .sub.date {{ list.date }}
       .sub.part {{ list.part }}
@@ -29,11 +29,15 @@
       @click="getLists('filter')" 
       v-if="data.length !== 0"
       :class="{ inactive: !queryParams.nextPage }") {{ queryParams.nextPage? "換下頁" : "沒有下一頁囉" }}
+  #show(v-if="Object.keys(data_show).length !== 0")
+    .cross(@click="data_show = {}")
+      img(src="../assets/img/close.png")
+    <List :data="data_show"/>
   
 </template>
 
 <script setup>
-import { onBeforeMount, onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 let { userData } = defineProps(["userData"])
@@ -43,8 +47,12 @@ const queryParams = reactive({
   part: null,
   nextPage: 1,
 })
-
 const data = ref([])
+const data_show = ref({})
+// const showStatus = computed(()=>{
+//   if(data.value.length == 0) return "沒有符合條件的運動紀錄"
+//   else if(!localStorage.token) return "看起來還沒<router-link to='/auth'>登入</router-link>喔！"
+// })
 
 function getLists(mode){
   if(mode == "filter"){
@@ -72,15 +80,32 @@ function getLists(mode){
     })
 }
 
+function getList(id){
+  let endPoint = `${import.meta.env.VITE_SERVER_URL}/api/list?id=${id}`
+  return fetch(endPoint)
+  .then( res => res.json() )
+  .then( data => data.data )
+}
+
+async function showData(id){
+  data_show.value = await getList(id);
+}
+
+
+
+// onBeforeMount( () => {
+//   if(!userData || !localStorage.token){
+//     router.push("/auth")
+//   }
+// })
+
+
+
 onMounted( async () => {
+  // console.log("dashboard mounted");
   data.value = await getLists()
 })
 
-onBeforeMount( () => {
-  if(!userData || !localStorage.token){
-    router.push("/auth")
-  }
-})
 </script>
 
 <style lang="sass" scoped>
@@ -149,6 +174,21 @@ button
       box-shadow: 0px 12px 10px -4px rgba(black, .8)
     &.latest
       box-shadow: 0px 0px 8px 5px white
+#show
+  position: absolute
+  top: 0
+  left: 0
+  background-color: rgba(black,.7)
+  width: 100%
+  height: 100%
+  display: flex
+  justify-content: center
+  align-items: center
+  .cross
+    position: absolute
+    top: 20px
+    right: 20px
+    cursor: pointer
 
 
 </style>

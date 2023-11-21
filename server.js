@@ -14,11 +14,13 @@ app.use("/api/auth", authApi)
 app.use("/api/history", historyApi)
 app.use("/api/lists", listsApi)
 
-
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/dist/index.html")
 })
 
+app.get("*", (req, res) => {
+  res.sendFile(__dirname + "/dist/index.html")
+})
 
 
 

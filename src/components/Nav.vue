@@ -2,7 +2,8 @@
 #nav(@click.self="toggleNav")
   .container
     .option.signout(@click="signOut" v-if="userData" ) 登出
-    .option.signin(@click="signIn" v-if="!userData" ) 登入
+    .option.signin(v-if="!userData" ) 
+      RouterLink(to="/auth") 登入
     .option(v-if="userData") 
       RouterLink(to="/dashboard") 管理紀錄
     .option(v-if="userData") 
@@ -18,8 +19,8 @@ const route = useRoute()
 const navStatus = reactive({
   now: route.path,
 })
-
 const userData = inject("userData")
+
 function signOut(){
   let yes = confirm("確定要登出了嗎？")
   if(!yes) return
@@ -45,12 +46,12 @@ onMounted(()=>{
 
 })
 
-onBeforeRouteLeave((to, from, next)=>{
-  console.log("object");
-  navStatus.now = to.path
+// onBeforeRouteLeave((to, from, next)=>{
+//   console.log("object");
+//   navStatus.now = to.path
 
-  next()
-})
+//   next()
+// })
 
 </script>
 

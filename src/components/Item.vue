@@ -5,7 +5,7 @@ const { item, sets } = toRefs(data)
 const thisIndex  = ref(index)
 const isExpanding = ref(false)
 const histories = inject("histories")
-const excercises = computed( () => histories.value.map( history => history.item ) )
+const exercises = computed( () => histories.value.map( history => history.item ) )
 const recommends = ref([])
 const chosenNum = ref(0)
 const isEmpty = computed(() => {
@@ -78,7 +78,7 @@ const vRecommendsCollapse = {
       }, 30)
     }
     input.oninput = () => {
-      let result = Array.from(excercises.value).filter( recommend => recommend.includes(input.value) )
+      let result = Array.from(exercises.value).filter( recommend => recommend.includes(input.value) )
       recommends.value = result
     }
   }

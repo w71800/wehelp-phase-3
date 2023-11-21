@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue"
+import { onMounted, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 const router = useRouter()
 const status = ref(null)
@@ -50,7 +50,7 @@ const ok = ref(false)
 const statusEl = ref(null)
 const signupData = reactive({})
 const emit = defineEmits(["signinSuccess"])
-function signinSubmit(e){
+async function signinSubmit(e){
     let signinForm = document.querySelector("form[type='signin']")
     
     const endPoint = import.meta.env.VITE_SERVER_URL + "/api/auth"
@@ -63,13 +63,11 @@ function signinSubmit(e){
     .then( data => {
       if(data.ok){
         localStorage.token = data.token
-        ok.value = true
-        statusEl.value.textContent = "登入成功"
-        
-        emit("signinSuccess")
+        // ok.value = true
+        // statusEl.value.textContent = "登入成功"
         router.push("/dashboard")
-      } 
-      else{
+        emit("signinSuccess")
+      } else{
         error.value = true
         statusEl.value.textContent = "信箱或密碼輸入錯誤"
       }
@@ -105,6 +103,10 @@ function signupSubmit(e){
 function changeType(e){
   type.value = e.target.dataset.type
 }
+
+onMounted(()=>{
+  console.log("mount");
+})
 
 </script>
 
