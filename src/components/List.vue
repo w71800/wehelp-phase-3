@@ -13,20 +13,53 @@
     .items
       .btn.add_item(@click="addItem") + 加入新項目
       <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem"/>
-  .submit(@click="submit") 儲存
+  .submit(@click="listAction") 儲存
 </template>
 
 <script setup>
-import { inject, toRefs } from 'vue'
+import { computed, inject, onMounted, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-const apiUrl = import.meta.env.VITE_SERVER_URL
-let { data } = defineProps({
-  data: Object || null
+let { data, isFromDashBoard } = defineProps({
+  data: Object || null,
+  isFromDashBoard: Boolean
  })
 const { date, part, items } = toRefs(data)
 const userData = inject("userData")
+const listActions = {
+  async submit() {
+    let yes = confirm("確定要送出嗎？")
+    if(!yes) return
 
+    let response = await submitList()
+    
+    if(response.ok){
+      router.push("/dashboard")
+    } else {
+    alert(`發生錯誤：${result.error}`)
+    }
+  },
+  async update(){
+    let yes = confirm("確定要送出嗎？")
+    if(!yes) return
+    
+    let response = await updateList()
+
+    if(response.ok){
+      alert("更新成功")
+      /**
+       * 是否要重新載入？
+       */
+    } else {
+      alert(`發生錯誤：${result.error}`)
+    }
+  }
+}
+const action = computed(()=>{
+  return isFromDashBoard ? 'update' : 'submit'
+})
+
+// methods //
 function addItem(){
   let item = {
     item: null,
@@ -48,12 +81,11 @@ function cleanEditing(e){
 
 function deleteItem(index){
   items.value.splice(index, 1)
-
 }
 
 function submitList(){
   let submitData = { ...data, userId: userData.value.id }
-  let endpoint = apiUrl + "/api/list"
+  let endpoint = import.meta.env.VITE_SERVER_URL + "/api/list"
   return fetch(endpoint, {
     method: "POST",
     headers: {
@@ -64,15 +96,36 @@ function submitList(){
   .then( res => res.json() )
 }
 
-async function submit(){
-  let yes = confirm("確定要送出嗎？")
-  if(!yes) return
-
-  let response = await submitList()
-  if(response.ok){
-    router.push("/dashboard")
+function updateList(){
+  let updateData = { 
+    ...data, 
+    userId: userData.value.id, 
+    category: userData.value.category 
   }
+  let endpoint = import.meta.env.VITE_SERVER_URL + "/api/list"
+  return fetch(endpoint, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(updateData)
+  })
+  .then( res => res.json() )
 }
+
+function listAction(){
+  listActions[action.value]()
+}
+
+
+
+
+// onMounted( () => {
+//   let corner = document.querySelector(".corner")
+//   if(isFromDashBoard){
+//     corner.style
+//   }
+// })
 
 </script>
 

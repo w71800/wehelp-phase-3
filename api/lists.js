@@ -13,7 +13,6 @@ const connection = pool.promise()
 router.use(express.json())
 
 async function getListsHandler(req, res){
-  console.log(req.query);
   /**
    * 幾個參數：
    * 1. 時間期間：week（預設）、biweeks、month、固定時間範圍
@@ -29,16 +28,24 @@ async function getListsHandler(req, res){
    *  nextPage: 1 or null
    * }
    */
-  let { id: userId, period, part, page } = req.query
+  let { id: userId, period, part, page, studentId } = req.query
   page = parseInt(page)
-  let query = `SELECT * from lists WHERE user_id = ? LIMIT 13 OFFSET ?`
-  let values = [ userId, (page - 1)*12 ]
+  let offset = (parseInt(page) - 1) * 12
+  let query = `
+    SELECT * FROM lists 
+    ${studentId ? 'LEFT JOIN users ON lists.user_id = users.user_id' : ''}
+    WHERE ${studentId ? 'users.user_id' : 'lists.user_id'} = ? 
+    ${part ? 'AND part = ?' : ''}
+    ${period ? 'AND created_at >= CURRENT_TIMESTAMP - INTERVAL ? DAY' : ''} 
+    LIMIT 13 OFFSET ?;
+  `
   
-  if(part !== 'null'){ 
-    query = `
-    SELECT * from lists WHERE user_id = ? and part = ? LIMIT 13 OFFSET ?`
-    values = [ userId, part, (page - 1)*12 ]
-  }
+  let values = [ userId ]
+  if(part) values.push(part)
+  if(period) values.push(period)
+  values.push(offset)
+  
+  console.log(query);
   let [ rows ] = await connection.query(query, values)
   let data = rows.slice(0, 12)
 

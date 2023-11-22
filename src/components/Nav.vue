@@ -1,13 +1,15 @@
 <template lang="pug">
 #nav(@click.self="toggleNav")
   .container
-    .option.signout(@click="signOut" v-if="userData" ) 登出
+    .option
+      RouterLink(to="/") 回首頁
     .option.signin(v-if="!userData" ) 
       RouterLink(to="/auth") 登入
     .option(v-if="userData") 
       RouterLink(to="/dashboard") 管理紀錄
     .option(v-if="userData") 
       RouterLink(to="/dialog") 動滋一下
+    .option.signout(@click="signOut" v-if="userData" ) 登出
 
 </template>
 
@@ -85,10 +87,13 @@ onMounted(()=>{
   a
     text-decoration: none
     color: #fff
+  &.signout
+    color: $color_hint
 
 #nav
-  .option:hover, .option:hover a
-    color: $color_list
+  .option:not(.signout), .option:not(.signout) a
+    &:hover
+      color: $color_list
   
 
 #nav.expand

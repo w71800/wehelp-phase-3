@@ -28,22 +28,63 @@ router.get("/", async (req, res)=>{
   res.json(response)
 })
 
-router.post("/", async (req, res)=>{
+router.post("/", async(req, res) => {
   let data = req.body
   
   let response = null
-  try{
+  try {
     let query = `INSERT INTO lists(user_id, date, part, items) values(?, ?, ?, ?)`
     let values = [data.userId, data.date, data.part, JSON.stringify(data.items) ]
     let result = await connection.query(query, values)
 
 
     response = { ok: true }
-  }catch(e){
+  } catch(e) {
     console.log(e);
 
     response = { error: e }
   }
+  res.json(response)
+})
+
+// 整份送過來，然後更動 list 中的 items
+router.put("/", async(req, res) => {
+  let data = req.body
+  let response = null
+  
+  
+  try {
+    let query = `UPDATE lists SET items = ? WHERE id = ?`
+    let values = [ JSON.stringify(data.items), data.id ]
+    let result = await connection.query(query, values)
+
+    if(data.category == "coach"){
+      /**
+       * 教練端的行為
+       */
+    }
+    
+    
+    /**
+     * result 可用的 api
+     * [
+          {
+              "fieldCount": 0,
+              "affectedRows": 1,
+              "insertId": 0,
+              "info": "Rows matched: 1  Changed: 0  Warnings: 0",
+              "serverStatus": 2,
+              "warningStatus": 0,
+              "changedRows": 0
+          },
+        ]
+     */
+    // res.json(result)
+    response = { ok: true }
+  } catch(e) {
+    response = { error: e }
+  }
+  
   res.json(response)
 })
 
