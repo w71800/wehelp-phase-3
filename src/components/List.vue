@@ -13,11 +13,30 @@
     .items
       .btn.add_item(@click="addItem") + 加入新項目
       <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem"/>
-  .submit(@click="listAction") 儲存
+  .submit(@click="listAction" ) 儲存
+  .msg_icon(@click="chatIsExpand = !chatIsExpand")
+    img(src="../assets/img/message.png")
+#chat(:class="{ expand: chatIsExpand }")
+  .cross(@click="chatIsExpand = !chatIsExpand")
+    img(src="../assets/img/close.png")
+  .title 與教練 XXX 的對話
+  .view
+    .messages
+      .message(
+        v-for="message of messages"
+        :class="message.isSelf ? 'self' : 'other'"
+      )
+        span {{ message.content }}
+  .wrapper
+    textarea(
+      v-model="nowMessage" 
+      placeholder="請輸入訊息")
+    .submit(@click="submitMessage" ) 送出
+
 </template>
 
 <script setup>
-import { computed, inject, onMounted, toRefs } from 'vue'
+import { ref, computed, inject, onMounted, reactive, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 let { data, isFromDashBoard } = defineProps({
@@ -58,6 +77,20 @@ const listActions = {
 const action = computed(()=>{
   return isFromDashBoard ? 'update' : 'submit'
 })
+const messages = ref([
+  {
+    userId: null, // 紀錄是哪個使用者留下的
+    isSelf: true, // 紀錄是否是自己留下的（userId == 當下使用者 id？）
+    content: "測試"
+  },
+  {
+    userId: null, // 紀錄是哪個使用者留下的
+    isSelf: false, // 紀錄是否是自己留下的（userId == 當下使用者 id？）
+    content: "測試（對方）"
+  }
+])
+const nowMessage = ref("測試")
+const chatIsExpand = ref(true)
 
 // methods //
 function addItem(){
@@ -117,6 +150,24 @@ function listAction(){
   listActions[action.value]()
 }
 
+function submitMessage(){
+  let msgObj = {
+    userId: userData.value.id, // 紀錄是哪個使用者留下的
+    isSelf: true, // 紀錄是否是自己留下的（userId == 當下使用者 id？），此屬性是在從遠端抓到之後解壓縮資料時動態生成的（透過 map 之類的）
+    content: nowMessage.value
+  }
+
+  if(nowMessage.value !== "") {
+    messages.value.push(msgObj)
+  }
+  else {
+    alert("請輸入訊息！")
+    return
+  }
+  localStorage.messages = JSON.stringify(messages.value) // 送出時存檔一下
+  nowMessage.value = ""
+}
+
 
 
 
@@ -133,11 +184,21 @@ function listAction(){
 <style lang="sass" scoped>
 #list
   width: 320px
+  min-width: 320px
   // height: 650px
   background-color: $color_list
   padding: 20px
   overflow: hidden
   // border: 2px solid $color_primary
+.msg_icon
+  cursor: pointer
+  opacity: 0.6
+  position: absolute
+  left: 8px
+  bottom: 5px
+  img
+    width: 20px
+    height: 20px
 .date
   margin-bottom: 10px
 .top
@@ -203,16 +264,93 @@ function listAction(){
   font-weight: 500
   color: #fff
   background-color: $color_primary
-  border: 2px solid $color_primary
   padding: 3px 5px
   cursor: pointer
   border-radius: 3px
+  border: none
+
+#chat
+  border: 1px solid #000
+  // height: 400px
+  padding: 10px
+  background-color: $color_list
+  display: none
+  .cross
+    position: absolute
+    right: 8px
+    top: 3px
+    cursor: pointer
+    img
+      width: 13px
+      height: 13px
+  .title
+    font-size: 1.3rem
+    color: #666
+    margin-bottom: 10px
+    text-align: center
+  .view
+    height: 400px
+    background-color: #fff
+    overflow-y: scroll
+    border-radius: 20px 20px 0px 0px
+  .wrapper
+    textarea
+      display: block
+      width: 300px
+      background-color: #eee
+      padding: 10px
+      border: none
+      border-radius: 0px 0px 20px 20px
+    .submit
+      display: flex
+      align-items: center
+      justify-content: center
+      height: 100%
+      bottom: 0
+      right: 0
+      font-size: 0.6rem
+  .messages
+  .message
+    // border: 1px solid #000
+    display: flex
+    margin-bottom: 20px
+    margin-top: 20px
+    span
+      border-radius: 12px
+      padding: 5px 10px
+    &.self
+      justify-content: flex-end
+      right: 5px
+      span
+        border-radius: 12px 12px 0px 12px
+        background-color: $color_primary
+        color: white
+    &.other
+      justify-content: flex-start
+      left: 5px
+      span
+        border-radius: 12px 12px 12px 0px
+        background-color: #eee
+      
+
+
+
+
+
+
+
+
+
+
 
 // function
 .submit:hover
-  color: $color_primary
-  background-color: #fff
-  border: 2px dashed $color_primary
+  color: #fff
+  background-color: $color_hint
+
+#chat.expand
+  display: block
+
 
 
 </style>

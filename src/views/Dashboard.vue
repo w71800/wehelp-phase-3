@@ -73,6 +73,8 @@ const data_show = ref({})
 //   else if(!localStorage.token) return "看起來還沒<router-link to='/auth'>登入</router-link>喔！"
 // })
 
+// methods //
+
 function getLists(mode, identity){
   if(mode == "filter"){
     queryParams.nextPage = 1
