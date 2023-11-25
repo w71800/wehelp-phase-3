@@ -17,7 +17,8 @@
   .msg_icon(
     @click="clearUnreads"
     )
-    img(:src=" isFromDashBoard ? '../src/assets/img/message_edit.png' : '../src/assets/img/message_create.png'")
+    img(v-if="!isFromDashBoard"  src='../assets/img/message_create.png')
+    img(v-if="isFromDashBoard"  src='../assets/img/message_edit.png')
 #chat(v-if="chatIsExpand")
   .cross(@click="submitMessage")
     img(src="../assets/img/close.png")
