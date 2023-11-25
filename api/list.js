@@ -24,7 +24,6 @@ router.get("/", async (req, res)=>{
   }catch(e){
     response = { error: e }
   }
-
   res.json(response)
 })
 
@@ -33,8 +32,17 @@ router.post("/", async(req, res) => {
   
   let response = null
   try {
-    let query = `INSERT INTO lists(user_id, date, part, items) values(?, ?, ?, ?)`
-    let values = [data.userId, data.date, data.part, JSON.stringify(data.items) ]
+    let query = `
+      INSERT INTO lists(user_id, date, part, items, messages, unreads) values(?, ?, ?, ?, ?, ?)
+      `
+    let values = [
+      data.userId, 
+      data.date, 
+      data.part, 
+      JSON.stringify(data.items),
+      JSON.stringify(data.messages),
+      JSON.stringify(data.unreads),
+    ]
     let result = await connection.query(query, values)
 
 
@@ -54,8 +62,13 @@ router.put("/", async(req, res) => {
   
   
   try {
-    let query = `UPDATE lists SET items = ? WHERE id = ?`
-    let values = [ JSON.stringify(data.items), data.id ]
+    let query = `UPDATE lists SET items = ?, messages = ?, unreads = ? WHERE id = ?`
+    let values = [ 
+      JSON.stringify(data.items), 
+      JSON.stringify(data.messages), 
+      JSON.stringify(data.unreads), 
+      data.id 
+    ]
     let result = await connection.query(query, values)
 
     if(data.category == "coach"){

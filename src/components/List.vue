@@ -13,14 +13,16 @@
     .items
       .btn.add_item(@click="addItem") + 加入新項目
       <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem"/>
-  .submit(@click="listAction" ) 儲存
-  .msg_icon(@click="chatIsExpand = !chatIsExpand")
-    img(src="../assets/img/message.png")
-#chat(:class="{ expand: chatIsExpand }")
-  .cross(@click="chatIsExpand = !chatIsExpand")
+  .submit(@click="listAction" ) 提交
+  .msg_icon(
+    @click="clearUnreads"
+    )
+    img(:src=" isFromDashBoard ? '../src/assets/img/message_edit.png' : '../src/assets/img/message_create.png'")
+#chat(v-if="chatIsExpand")
+  .cross(@click="submitMessage")
     img(src="../assets/img/close.png")
-  .title 與教練 XXX 的對話
   .view
+    .title 與教練 XXX 的對話
     .messages
       .message(
         v-for="message of messages"
@@ -31,7 +33,8 @@
     textarea(
       v-model="nowMessage" 
       placeholder="請輸入訊息")
-    .submit(@click="submitMessage" ) 送出
+    .submit(@click="storeMessage" )
+      img(src="../assets/img/send.png")
 
 </template>
 
@@ -43,7 +46,7 @@ let { data, isFromDashBoard } = defineProps({
   data: Object || null,
   isFromDashBoard: Boolean
  })
-const { date, part, items } = toRefs(data)
+const { date, part, items, messages, unreads } = toRefs(data)
 const userData = inject("userData")
 const listActions = {
   async submit() {
@@ -77,20 +80,8 @@ const listActions = {
 const action = computed(()=>{
   return isFromDashBoard ? 'update' : 'submit'
 })
-const messages = ref([
-  {
-    userId: null, // 紀錄是哪個使用者留下的
-    isSelf: true, // 紀錄是否是自己留下的（userId == 當下使用者 id？）
-    content: "測試"
-  },
-  {
-    userId: null, // 紀錄是哪個使用者留下的
-    isSelf: false, // 紀錄是否是自己留下的（userId == 當下使用者 id？）
-    content: "測試（對方）"
-  }
-])
 const nowMessage = ref("測試")
-const chatIsExpand = ref(true)
+const chatIsExpand = ref(false)
 
 // methods //
 function addItem(){
@@ -117,7 +108,12 @@ function deleteItem(index){
 }
 
 function submitList(){
-  let submitData = { ...data, userId: userData.value.id }
+  let submitData = { 
+    ...data, 
+    userId: userData.value.id,
+    messages: messages.value,
+    unreads: unreads.value
+  }
   let endpoint = import.meta.env.VITE_SERVER_URL + "/api/list"
   return fetch(endpoint, {
     method: "POST",
@@ -133,7 +129,9 @@ function updateList(){
   let updateData = { 
     ...data, 
     userId: userData.value.id, 
-    category: userData.value.category 
+    category: userData.value.category,
+    messages: messages.value,
+    unreads: unreads.value
   }
   let endpoint = import.meta.env.VITE_SERVER_URL + "/api/list"
   return fetch(endpoint, {
@@ -150,7 +148,7 @@ function listAction(){
   listActions[action.value]()
 }
 
-function submitMessage(){
+function storeMessage(){
   let msgObj = {
     userId: userData.value.id, // 紀錄是哪個使用者留下的
     isSelf: true, // 紀錄是否是自己留下的（userId == 當下使用者 id？），此屬性是在從遠端抓到之後解壓縮資料時動態生成的（透過 map 之類的）
@@ -158,14 +156,42 @@ function submitMessage(){
   }
 
   if(nowMessage.value !== "") {
+    let { userId, content } = msgObj
     messages.value.push(msgObj)
+    unreads.value.push({ userId, content })
   }
   else {
     alert("請輸入訊息！")
     return
   }
-  localStorage.messages = JSON.stringify(messages.value) // 送出時存檔一下
+  // localStorage.messages = JSON.stringify(messages.value) // 送出時存檔一下
   nowMessage.value = ""
+}
+
+function submitMessage(){
+  chatIsExpand.value = !chatIsExpand.value
+  if(!isFromDashBoard) return
+
+  let submitData = {
+    id: data.id,
+    messages: messages.value,
+    unreads: unreads.value
+   }
+
+  let endpoint = import.meta.env.VITE_SERVER_URL + "/api/messages"
+  return fetch(endpoint, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(submitData)
+  })
+  .then( res => res.json() )
+}
+
+function clearUnreads(){
+  chatIsExpand.value = !chatIsExpand.value
+  unreads.value = unreads.value.filter( unread => unread.userId = userData.value.id )
 }
 
 
@@ -192,7 +218,7 @@ function submitMessage(){
   // border: 2px solid $color_primary
 .msg_icon
   cursor: pointer
-  opacity: 0.6
+  opacity: 0.4
   position: absolute
   left: 8px
   bottom: 5px
@@ -270,37 +296,53 @@ function submitMessage(){
   border: none
 
 #chat
-  border: 1px solid #000
   // height: 400px
   padding: 10px
-  background-color: $color_list
-  display: none
+  margin-left: 20px
+  // background-color: $color_list
+
   .cross
+    display: flex
+    justify-content: center
+    align-items: center
+    width: 25px
+    height: 25px
+    border-radius: 50%
+    background-color: #fff
     position: absolute
-    right: 8px
-    top: 3px
+    right: 10px
+    top: -20px
     cursor: pointer
     img
       width: 13px
       height: 13px
-  .title
-    font-size: 1.3rem
-    color: #666
-    margin-bottom: 10px
-    text-align: center
   .view
     height: 400px
     background-color: #fff
     overflow-y: scroll
     border-radius: 20px 20px 0px 0px
+    border: 5px solid lighten($color_primary, 20)
+    border-bottom: none
+  .title
+    // border: 1px solid #000
+    position: absolute
+    width: 100%
+    font-size: 0.8rem
+    color: #999
+    padding-top: 5px
+    text-align: center
+    // border: 1px solid #000
   .wrapper
+    overflow: hidden
+    border-radius: 0px 0px 20px 20px
+    border: 5px solid lighten($color_primary, 20)
+    border-top: none
     textarea
       display: block
       width: 300px
       background-color: #eee
       padding: 10px
       border: none
-      border-radius: 0px 0px 20px 20px
     .submit
       display: flex
       align-items: center
@@ -309,15 +351,20 @@ function submitMessage(){
       bottom: 0
       right: 0
       font-size: 0.6rem
+      img
+        transition: .3s
+        width: 18px
+        height: 18px
   .messages
   .message
     // border: 1px solid #000
     display: flex
     margin-bottom: 20px
-    margin-top: 20px
+    margin-top: 30px
     span
       border-radius: 12px
       padding: 5px 10px
+      font-size: 0.8rem
     &.self
       justify-content: flex-end
       right: 5px
@@ -334,23 +381,22 @@ function submitMessage(){
       
 
 
-
-
-
-
-
-
-
-
-
 // function
 .submit:hover
   color: #fff
   background-color: $color_hint
 
-#chat.expand
-  display: block
+#list
+  .msg_icon:hover
+    opacity: 1
 
-
+#chat
+  .cross:hover
+    background-color: $color_hint
+  textarea:focus
+    outline-color: lighten($color_hint, 20)
+  .submit:hover
+    img
+      transform: translate(1px, -1px)
 
 </style>

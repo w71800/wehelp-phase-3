@@ -125,7 +125,9 @@ async function showData(id){
 function dateTransformer(dateStr){
   let isRecent = new Date().getDate() - new Date(dateStr).getDate()
   let r = undefined
-  if(isRecent == 1) {
+  if(isRecent == 0){
+    r = "今天"
+  } else if(isRecent == 1) {
     r = "昨天"
   } else if(isRecent == 2) {
     r = "前天"

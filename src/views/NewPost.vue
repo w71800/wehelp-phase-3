@@ -26,7 +26,9 @@ function newList(date, part){
   let listObj = { 
     date,
     part,
-    items: []
+    items: [],
+    messages: [],
+    unreads: []
   }
 
   return listObj
