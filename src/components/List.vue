@@ -4,10 +4,10 @@
   .top
     .date 
       span 日期：
-      span {{ date }}
+      span {{ data.date }}
     .part
       span 部位：
-      span {{ part }}
+      span {{ data.part }}
   hr
   .bottom
     .items
@@ -22,8 +22,8 @@
 #chat(v-if="chatIsExpand")
   .cross(@click="submitMessage")
     img(src="../assets/img/close.png")
-  .view
-    .title 與教練 XXX 的對話
+  .view(ref="chatView")
+    .title {{ title }}
     .messages
       .message(
         v-for="message of messages"
@@ -47,7 +47,8 @@ let { data, isFromDashBoard } = defineProps({
   data: Object || null,
   isFromDashBoard: Boolean
  })
-const { date, part, items, messages, unreads } = toRefs(data)
+const { items, messages, unreads } = toRefs(data)
+
 const userData = inject("userData")
 const listActions = {
   async submit() {
@@ -83,6 +84,13 @@ const action = computed(()=>{
 })
 const nowMessage = ref("測試")
 const chatIsExpand = ref(false)
+const title = computed(() => {
+  return userData.value.category == "user" 
+  ? `與教練 ${userData.value.coach.username} 的對話` 
+  : `與學員 ${data.username} 的對話` 
+})
+const chatView = ref(null)
+
 
 // methods //
 function addItem(){
@@ -155,11 +163,16 @@ function storeMessage(){
     isSelf: true, // 紀錄是否是自己留下的（userId == 當下使用者 id？），此屬性是在從遠端抓到之後解壓縮資料時動態生成的（透過 map 之類的）
     content: nowMessage.value
   }
-
+  
   if(nowMessage.value !== "") {
     let { userId, content } = msgObj
     messages.value.push(msgObj)
     unreads.value.push({ userId, content })
+    
+    if (chatView.value) {
+      console.log(chatView.value.scrollHeight);
+      chatView.value.scrollTop = chatView.value.scrollHeight;
+    }
   }
   else {
     alert("請輸入訊息！")
@@ -179,6 +192,7 @@ function submitMessage(){
     unreads: unreads.value
    }
 
+   console.log(submitData);
   let endpoint = import.meta.env.VITE_SERVER_URL + "/api/messages"
   return fetch(endpoint, {
     method: "PUT",
@@ -192,18 +206,21 @@ function submitMessage(){
 
 function clearUnreads(){
   chatIsExpand.value = !chatIsExpand.value
-  unreads.value = unreads.value.filter( unread => unread.userId = userData.value.id )
+  unreads.value = unreads.value.filter( unread => unread.userId == userData.value.id )
 }
 
 
 
 
-// onMounted( () => {
-//   let corner = document.querySelector(".corner")
-//   if(isFromDashBoard){
-//     corner.style
-//   }
-// })
+
+onMounted( () => {
+  messages.value = messages.value.map( message => {
+    let { isSelf, ...rest } = message
+    let result = { ...rest, isSelf: message.userId == userData.value.id }
+    return result
+  }
+)
+})
 
 </script>
 

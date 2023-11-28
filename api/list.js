@@ -17,10 +17,12 @@ router.get("/", async (req, res)=>{
   let response = null
   let { id } = req.query
   try{
-    let query = `SELECT * from lists WHERE id = ?`
+    let query = `SELECT lists.*, users.username from lists LEFT JOIN users
+    ON lists.user_id = users.id WHERE lists.id = ?`
     let [ row ] = await connection.query(query, id)
+    let { password,  ...rest } = row[0]
     
-    response = { data: row[0] }
+    response = { data: rest }
   }catch(e){
     response = { error: e }
   }

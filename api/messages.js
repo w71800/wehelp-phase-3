@@ -13,19 +13,17 @@ const connection = pool.promise()
 router.use(express.json())
 
 router.put("/", async(req, res) => {
-  let data = req.body
+  let { messages, unreads, id } = req.body
   let response = null
   try {
-    console.log(data);
+    console.log(messages);
     let query = `UPDATE lists SET messages = ?, unreads = ? WHERE id = ?`
     let values = [ 
-      JSON.stringify(data.messages), 
-      JSON.stringify(data.unreads),
-      data.id
+      JSON.stringify(messages), 
+      JSON.stringify(unreads),
+      id,
     ]
     let result = await connection.query(query, values)
-    console.log(result.affectedRows);
-
     if(data.category == "coach"){
       /**
        * 教練端的行為

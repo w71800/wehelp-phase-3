@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeMount, onBeforeUnmount, provide, ref } from 'vue'
 import { useRouter } from 'vue-router'
+const router = useRouter()
 const userData = ref(null)
 provide("userData", userData)
 
@@ -16,6 +17,9 @@ function updateUserData(e){
     .then( data => {
       userData.value = data
       localStorage.setItem("userData", JSON.stringify(userData.value))
+
+      if(userData.value.category == "user") router.push("/")
+      else if(userData.value.category == "coach") router.push("/dashboard")
     })
 }
 

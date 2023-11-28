@@ -23,9 +23,9 @@
     //- 教練部分查詢學生用
     .wrapper(v-if="userData.category == 'coach'")
       label(for="part") 學員：
-      select(id="part" name="part" v-model="queryParams.studentId")
-    //- label(for="") 
-    //- select(id="") 
+      select(id="part" name="part" v-model="queryParams.studentId" placeholder="學員名稱")
+        //- option(value="" disabled selected) 學員名稱
+        option(v-for="student in userData.students" :value="student.id") {{ student.username }}
     button.filter(@click="getLists('filter')") 搜尋
   #board
     .status(v-if="data.length == 0") 沒有符合條件的運動紀錄
@@ -75,7 +75,7 @@ const data_show = ref({})
 
 // methods //
 
-function getLists(mode, identity){
+function getLists(mode){
   if(mode == "filter"){
     queryParams.nextPage = 1
     data.value = []
@@ -90,13 +90,13 @@ function getLists(mode, identity){
   if(!nextPage) return
 
   let queryStr = `id=${userId}`
-  if(identity == "coach") queryStr += `&studentId=${studentId}`
+  if(userData.category == "coach") queryStr += `&studentId=${studentId}`
   if(part) queryStr += `&part=${part}`
   if(period) queryStr += `&period=${period}`
   queryStr += `&page=${nextPage}`
   
   let endPoint = `${import.meta.env.VITE_SERVER_URL}/api/lists?${queryStr}`
-
+  console.log(endPoint);
   return fetch(endPoint)
     .then( response => response.json() )
     .then( data => {

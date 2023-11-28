@@ -29,10 +29,24 @@ async function authHandler(req, res){
     let [ rows ] = await connection.query(query, values)
     if(rows.length !== 0){
       let { password, ...rest } = rows[0]
-      console.log(rest);
-      let token = jwt.sign({ 
-        email, 
-        ...rest }, secretKey, { expiresIn: '30d' });
+      
+      if(rest.category == "coach"){
+        let query = `SELECT id, username from users WHERE coach_id = ?`
+        let [ students ] = await connection.query(query, rest.id)
+
+        rest.students = students
+      }else if(rest.category == "user"){
+        let query = `SELECT id, username from users WHERE id = ?`
+        let [ coach ] = await connection.query(query, rest.coach_id)
+        
+        rest = { ...rest, coach: coach[0] } 
+      }
+
+      let token = jwt.sign(
+        { 
+          email, 
+          ...rest 
+        }, secretKey, { expiresIn: '30d' });
       
       response = JSON.stringify({ ok: true, token, msg: "登入成功" })
     }else{

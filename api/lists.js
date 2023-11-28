@@ -32,20 +32,22 @@ async function getListsHandler(req, res){
   page = parseInt(page)
   let offset = (parseInt(page) - 1) * 12
   let query = `
-    SELECT * FROM lists 
-    ${studentId ? 'LEFT JOIN users ON lists.user_id = users.user_id' : ''}
-    WHERE ${studentId ? 'users.user_id' : 'lists.user_id'} = ? 
+    SELECT * FROM lists WHERE user_id = ?
     ${part ? 'AND part = ?' : ''}
     ${period ? 'AND created_at >= CURRENT_TIMESTAMP - INTERVAL ? DAY' : ''} 
     LIMIT 13 OFFSET ?;
   `
   
   let values = [ userId ]
+  if(studentId){
+    values = []
+    values.push(studentId)
+  }
   if(part) values.push(part)
   if(period) values.push(period)
   values.push(offset)
+
   
-  console.log(query);
   let [ rows ] = await connection.query(query, values)
   let data = rows.slice(0, 12)
 
@@ -53,7 +55,6 @@ async function getListsHandler(req, res){
     data,
     nextPage: rows.length < 13? null : page + 1
   }
-  // console.log(response);
   return res.json(response)
 }
 

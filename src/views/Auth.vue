@@ -1,14 +1,27 @@
 <template lang="pug">
 .container
+  
   #box(v-if="type == 'signin'")
+    .test 測試：
+      label(for="testUser") 一般會員
+      input(type="radio" name="test" id="testUser" v-model="test" value="user" checked) 
+      label(for="testCoach") 教練
+      input(type="radio" name="test" id="testCoach" v-model="test" value="coach") 
     form(type="signin")
       h1.title 歡迎登入
       .wrapper
         label(for="email") 信箱
-        input(name="email" id="email")
+        input(
+          name="email" 
+          id="email" 
+          v-model="testCategory.email") 
       .wrapper
         label(for="password") 密碼
-        input(type="password" name="password" id="password")
+        input(
+          type="password" 
+          name="password" 
+          id="password" 
+          v-model="testCategory.password")
       .wrapper 
         input(type="submit" @click.prevent="signinSubmit" value="登入")
     .murmur 今天也來運動，辛苦囉！
@@ -40,7 +53,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue"
+import { computed, onMounted, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 const router = useRouter()
 const status = ref(null)
@@ -50,6 +63,28 @@ const ok = ref(false)
 const statusEl = ref(null)
 const signupData = reactive({})
 const emit = defineEmits(["signinSuccess"])
+
+// test //
+const test = ref("user")
+const testCategory = computed(()=>{
+  if(test.value == "user"){
+    return {
+      email: "admin@admin",
+      password: "0000"
+    }
+  } else if(test.value == "coach"){
+    return {
+      email: "coach@admin",
+      password: "0000"
+    }
+  }
+  // return {
+  //     email: "admin@admin",
+  //     password: "0000"
+  //   }
+})
+
+// methods //
 async function signinSubmit(e){
     let signinForm = document.querySelector("form[type='signin']")
     
@@ -63,9 +98,8 @@ async function signinSubmit(e){
     .then( data => {
       if(data.ok){
         localStorage.token = data.token
-        // ok.value = true
-        // statusEl.value.textContent = "登入成功"
-        router.push("/dashboard")
+        ok.value = true
+        statusEl.value.textContent = "登入成功"
         emit("signinSuccess")
       } else{
         error.value = true
@@ -77,6 +111,7 @@ async function signinSubmit(e){
       }, 1000)
     })
 }
+
 function signupSubmit(e){
   let form = document.querySelector("form[type='signup']")
     
@@ -100,6 +135,7 @@ function signupSubmit(e){
       }
     })
 }
+
 function changeType(e){
   type.value = e.target.dataset.type
 }
@@ -111,6 +147,15 @@ onMounted(()=>{
 </script>
 
 <style lang="sass" scoped>
+.test
+  position: absolute
+  top: 0
+  transform: translateY(-100%)
+  color: #999
+  font-size: 0.8rem
+  input
+    margin-right: 10px
+
 #box
   width: 320px
   background-color: #fff
