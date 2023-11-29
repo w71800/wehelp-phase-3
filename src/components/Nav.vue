@@ -6,8 +6,8 @@
     .option.signin(v-if="!userData" ) 
       RouterLink(to="/auth") 登入
     .option(v-if="userData") 
-      RouterLink(to="/dashboard") 管理紀錄
-    .option(v-if="userData") 
+      RouterLink(to="/dashboard") {{ userData.category == "user" ? "管理紀錄" : "管理學員紀錄"}}
+    .option(v-if="userData && userData.category == 'user'") 
       RouterLink(to="/dialog") 動滋一下
     .option.signout(@click="signOut" v-if="userData" ) 登出
 

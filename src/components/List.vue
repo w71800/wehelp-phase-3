@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, onMounted, reactive, toRefs } from 'vue'
+import { ref, computed, inject, onMounted, reactive, toRefs, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 let { data, isFromDashBoard } = defineProps({
@@ -170,8 +170,9 @@ function storeMessage(){
     unreads.value.push({ userId, content })
     
     if (chatView.value) {
-      console.log(chatView.value.scrollHeight);
-      chatView.value.scrollTop = chatView.value.scrollHeight;
+      nextTick(() => {
+        chatView.value.scrollTop = chatView.value.scrollHeight;
+      })
     }
   }
   else {

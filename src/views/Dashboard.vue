@@ -4,44 +4,62 @@
     .wrapper
       label(for="period") 時間：
       select(id="period" name="period" v-model="queryParams.period")
+        option(value="null" disabled) 選擇時間
         option(value=7) 一週
         option(value=14 ) 兩週
         option(value=30 ) 一個月
-      label(for="on") 由舊到新
+      img(src="../assets/img/arrow.png")
+    .wrapper
+      label(for="on") 最舊在前
       input(type="radio" id="on" name="sort" v-model="queryParams.sort" value="on")
-      label(for="no") 由新到舊
+      label(for="no") 最新在前
       input(type="radio" id="no" name="sort" v-model="queryParams.sort" value="no")
     .wrapper
       label(for="part") 部位：
       select(id="part" name="part" v-model="queryParams.part")
+        option(value="null" disabled) 選擇部位
         option(value="null") 總覽
         option(value="腿") 腿
         option(value="肩" ) 肩
         option(value="胸" ) 胸
         option(value="背" ) 背
         option(value="混合" ) 混合
+      img(src="../assets/img/arrow.png")
     //- 教練部分查詢學生用
     .wrapper(v-if="userData.category == 'coach'")
       label(for="part") 學員：
       select(id="part" name="part" v-model="queryParams.studentId" placeholder="學員名稱")
-        //- option(value="" disabled selected) 學員名稱
+        option(value="null" disabled) 學員名稱
         option(v-for="student in userData.students" :value="student.id") {{ student.username }}
+      img(src="../assets/img/arrow.png")
     button.filter(@click="getLists('filter')") 搜尋
+  
   #board
-    .status(v-if="data.length == 0") 沒有符合條件的運動紀錄
-    .list(v-for="list of data" @click="showData(list.id)")
-      img(src="../assets/img/icon.png")
-      .sub.date {{ dateTransformer(list.date) }}
-      .sub.part {{ list.part }}
+    .status(v-if="data.length == 0 && !firstVisited") 沒有符合條件的運動紀錄
+    .status(v-if="data.length == 0 && firstVisited") 請輸入搜尋條件
+    <TransitionGroup name="list">
+      .list(
+        v-for="list of data" 
+        @click="showData(list.id)" 
+        :key="list"
+        )
+        img(src="../assets/img/icon.png")
+        .sub.date {{ dateTransformer(list.date) }}
+        .sub.part {{ list.part }}
+    </TransitionGroup>
     button.nextPage(
       @click="getLists" 
       v-if="data.length !== 0"
       :class="{ inactive: !queryParams.nextPage }") {{ queryParams.nextPage? "換下頁" : "沒有下一頁囉" }}
-  #show(v-if="Object.keys(data_show).length !== 0")
-    .cross(@click="data_show = {}")
-      .line
-      .line
-    <List :data="data_show" :isFromDashBoard="true"/>
+  
+  #graphs
+    <GraphCard/>
+
+#show(v-if="Object.keys(data_show).length !== 0")
+  .cross(@click="data_show = {}")
+    .line
+    .line
+  <List :data="data_show" :isFromDashBoard="true"/>
   
 </template>
 
@@ -56,7 +74,7 @@ const queryParams = reactive({
   period: null,
   part: null,
   nextPage: 1,
-  sort: "no"
+  sort: "on"
 })
 const data = ref([])
 watch(() => queryParams.sort, (sort) => {
@@ -68,6 +86,7 @@ watch(() => queryParams.sort, (sort) => {
   }
 })
 const data_show = ref({})
+const firstVisited = ref(true)
 // const showStatus = computed(()=>{
 //   if(data.value.length == 0) return "沒有符合條件的運動紀錄"
 //   else if(!localStorage.token) return "看起來還沒<router-link to='/auth'>登入</router-link>喔！"
@@ -77,6 +96,7 @@ const data_show = ref({})
 
 function getLists(mode){
   if(mode == "filter"){
+    firstVisited.value = false
     queryParams.nextPage = 1
     data.value = []
   }
@@ -172,25 +192,63 @@ $gap_width: 20px
 
 .container
   display: block
+  margin: 0 auto
+  padding-top: 30px
 button
   cursor: pointer
   padding: 5px 8px
   border-radius: 3px
   border: none
 #panel
-  display: flex
+  padding-bottom: 20px
   margin-bottom: 20px
-  button
-    padding: 3px 5px
-    margin-left: 10px
+  border-bottom: 2px solid #eee
+  .wrapper
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    vertical-align: middle
+    border: 2px solid #eee
+    margin-right: 20px
+    background-color: #fff
+    padding: 5px 8px
+    border-radius: 5px
+    height: 50px
+  label
+    font-weight: 700
+    color: #888
+  select
+    color: #555
+    font-weight: 700
+    font-size: 1rem
+  input[type="radio"]
+    margin: 0px 5px
+    &:nth-child(2)
+      margin-right: 20px
+      
+  img
+    cursor: pointer
+    transition: .2s
+    height: 18px
+    width: 18px
+    transform: rotate(-90deg)
+    opacity: 0.6
+
 #board
   display: flex
   justify-content: flex-start
   gap: $gap_width
   flex-wrap: wrap
-  // border: 1px solid #000
+  margin-bottom: 20px
+  padding-bottom: 100px
+  border-bottom: 2px solid #eee
   *
     text-align: center
+  .status
+    width: 100%
+    text-align: center
+    color: $color_list
+    font-size: 1.5rem
   .list
     +splitList(4)
     // border: 1px solid #000
@@ -219,7 +277,7 @@ button
   button.nextPage
     position: absolute
     left: 50%
-    bottom: -50px
+    bottom: 30px
     transform: translateX(-50%)
 
 #board
@@ -278,6 +336,20 @@ button
         transform: rotate(45deg)
       &:nth-child(2)
         transform: rotate(-45deg)
+
+#panel
+  .wrapper
+    select:focus +img
+      transform: rotate(90deg)
+
     
+// Vue transition //
+.list-enter-from, .list-leave-to
+  opacity: 0
+.list-enter-to, .list-leave-from
+  opacity: 1
+// .list-enter-active, .list-leave-active
+//   transition: opacity 10s ease
+
 
 </style>

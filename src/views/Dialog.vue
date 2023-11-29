@@ -3,14 +3,15 @@
   #box
     h1.title 今天想練什麼？
     .wrapper
-      label(for="part") 部位：
+      label(for="part") 我想練：
       select(id="part" v-model="part" required)
-        option(value="" selected disabled) どっち
+        option(value="null" disabled) どっち
         option(value="腿") 腿
         option(value="肩") 肩
         option(value="胸") 胸
         option(value="背") 背
         option(value="混合") 混合
+      img(src="../assets/img/arrow.png")
     .submit
       RouterLink(to="/newpost") 開始動滋！
 
@@ -18,8 +19,8 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { onBeforeRouteLeave } from "vue-router"
+import { onMounted, ref } from "vue"
+import { onBeforeRouteLeave, useRoute } from "vue-router"
 const part = ref(null)
 
 onBeforeRouteLeave((to, from ,next) => {
@@ -27,6 +28,9 @@ onBeforeRouteLeave((to, from ,next) => {
   next()
 })
 
+onMounted(()=>{
+  
+})
 </script>
 
 <style lang="sass" scoped>
@@ -48,19 +52,30 @@ h1.title
   font-weight: 700
   text-align: center
 .wrapper
-  text-align: center
+  display: flex
+  align-items: center
+  justify-content: center
   padding: 80px 0px
-label, select
+  *
+    // border: 1px solid #000
+label, select, img
   vertical-align: middle
+img
+  right: 23px
+  transition: .3s
+  transform: rotate(-90deg)
 label
-  font-size: 1.5rem
+  font-size: 1.2rem
 select
   width: 150px
   height: 40px
   color: $color_secondary
   font-weight: 500
-  font-size: 1rem
+  font-size: 1.2rem
   padding: 0px 10px
+img
+  width: 18px
+  height: 18px
 .submit
   text-align: center
   padding: 10px
@@ -77,5 +92,10 @@ select
     background-color: $color_primary
     *
       color: #fff
+
+#box
+  .wrapper
+    select:focus + img
+      transform: rotate(90deg)
   
 </style>
