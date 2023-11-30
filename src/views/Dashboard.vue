@@ -11,9 +11,21 @@
       img(src="../assets/img/arrow.png")
     .wrapper
       label(for="on") 最舊在前
-      input(type="radio" id="on" name="sort" v-model="queryParams.sort" value="on")
+      input(
+        type="radio" 
+        id="on" 
+        name="sort" 
+        v-model="queryParams.sort" 
+        value="on" 
+        :disabled="data.length == 0")
       label(for="no") 最新在前
-      input(type="radio" id="no" name="sort" v-model="queryParams.sort" value="no")
+      input(
+        type="radio" 
+        id="no" 
+        name="sort" 
+        v-model="queryParams.sort" 
+        value="no" 
+        :disabled="data.length == 0")
     .wrapper
       label(for="part") 部位：
       select(id="part" name="part" v-model="queryParams.part")
@@ -28,7 +40,12 @@
     //- 教練部分查詢學生用
     .wrapper(v-if="userData.category == 'coach'")
       label(for="part") 學員：
-      select(id="part" name="part" v-model="queryParams.studentId" placeholder="學員名稱")
+      select(
+        id="part" 
+        name="part" 
+        placeholder="學員名稱"
+        v-model="queryParams.studentId" 
+        )
         option(value="null" disabled) 學員名稱
         option(v-for="student in userData.students" :value="student.id") {{ student.username }}
       img(src="../assets/img/arrow.png")
@@ -53,7 +70,8 @@
       :class="{ inactive: !queryParams.nextPage }") {{ queryParams.nextPage? "換下頁" : "沒有下一頁囉" }}
   
   #graphs
-    <GraphCard/>
+    <GraphCard v-for="graphData of graphDatas" :rawData="graphData" :key="graphData"/>
+    button.filter(@click="makeGraphData") 取得統計資訊
 
 #show(v-if="Object.keys(data_show).length !== 0")
   .cross(@click="data_show = {}")
@@ -91,6 +109,36 @@ const firstVisited = ref(true)
 //   if(data.value.length == 0) return "沒有符合條件的運動紀錄"
 //   else if(!localStorage.token) return "看起來還沒<router-link to='/auth'>登入</router-link>喔！"
 // })
+const graphDatas = ref([
+  // {
+  //   item: "硬舉（槓）",
+  //   data: {
+  //     "2023 / 11 / 06": {
+  //       times: [12, 12, 12],
+  //       load: [20, 25, 30],
+  //       rpe: [6, 7, 8],
+  //     },
+  //     "2023 / 11 / 07": {
+  //       times: [12, 12, 12],
+  //       load: [22, 28, 36],
+  //       rpe: [7, 8, 10],
+  //       unit: "kg"
+  //     },
+  //     "2023 / 11 / 08": {
+  //       times: [12, 12, 12],
+  //       load: [23, 30, 34],
+  //       rpe: [2, 2, 8],
+  //       unit: "kg"
+  //     },
+  //     "2023 / 11 / 10": {
+  //       times: [12, 12, 12],
+  //       load: [20, 21, 22],
+  //       rpe: [2, 6, 8],
+  //       unit: "kg"
+  //     }
+  //   },
+  // }
+])
 
 // methods //
 
@@ -98,7 +146,9 @@ function getLists(mode){
   if(mode == "filter"){
     firstVisited.value = false
     queryParams.nextPage = 1
+    queryParams.sort = "on"
     data.value = []
+
   }
   let { userId, period, part, nextPage, studentId } = queryParams
   /**
@@ -155,6 +205,39 @@ function dateTransformer(dateStr){
     r = dateStr
   }
   return r
+}
+
+function getGraphData(){
+  let { userId, period, part, studentId } = queryParams
+
+  let queryStr = `id=${userId}`
+  if(userData.category == "coach") queryStr += `&studentId=${studentId}`
+  if(part) queryStr += `&part=${part}`
+  if(period) queryStr += `&period=${period}`
+  // queryStr += `&page=${nextPage}`
+  console.log(queryStr);
+  let endPoint = `${import.meta.env.VITE_SERVER_URL}/api/graphdata?${queryStr}`
+  return fetch(endPoint)
+  .then( res => res.json() )
+  .then( data => data.data )
+}
+
+async function makeGraphData(){
+  try{
+    let data = await getGraphData()
+    let result = []
+    for(let [ item, d ] of Object.entries(data)){
+      let temp = {}
+      temp.item = item
+      temp.data = d
+
+      result.push(temp)
+    }
+    graphDatas.value = result
+  }
+  catch(e){
+    console.log(e);
+  }
 }
 
 // onBeforeMount( () => {
@@ -342,7 +425,13 @@ button
     select:focus +img
       transform: rotate(90deg)
 
-    
+// RWD //
+@media screen and (max-width: 1200px)
+#panel
+  .wrapper
+    margin-bottom: 20px
+
+  
 // Vue transition //
 .list-enter-from, .list-leave-to
   opacity: 0

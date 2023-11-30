@@ -35,8 +35,8 @@ onBeforeMount(() => {
   justify-content: center
   color: #999
   border: 8px solid darken(#fff, 6)
-  box-shadow: 0 0.7em darken(#fff, 25)
-  transition: .3s
+  box-shadow: 0 0.7em darken(#fff, 25), 0px 15px 20px 10px rgba(black, .3)
+  transition: .3s cubic-bezier(.05,.69,.24,.97)
   overflow: hidden
   cursor: pointer
   &::after, &::before
@@ -64,7 +64,7 @@ a
 
 .link
   &:hover
-    box-shadow: 0 0 darken(#fff, 25)
+    box-shadow: 0 0 darken(#fff, 25), 0px 15px 20px 5px rgba(black, .3)
     transform: translateY(0.6em)
     img
       transition: .3s

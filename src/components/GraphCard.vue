@@ -21,22 +21,8 @@ import { Chart as
   LinearScale 
 } from 'chart.js'
 ChartJS.register(Title, Tooltip, Legend, PointElement, LineElement, BarElement,  CategoryScale, LinearScale)
-const rawData = reactive({
-  item: "硬舉（槓）",
-  data: {
-    "2023 / 11 / 06": {
-      times: [12, 12, 12],
-      load: [20, 25, 30],
-      rpe: [6, 7, 8],
-    },
-    "2023 / 11 / 07": {
-      times: [12, 12, 12],
-      load: [22, 28, 36],
-      rpe: [7, 8, 10],
-    }
-  },
-  unit: "kg"
-})
+
+const { rawData } = defineProps(["rawData"])
 
 // chart configuration //
 const chartOptions = reactive({
@@ -55,8 +41,6 @@ const chartOptions = reactive({
   }
 })
 const chartData = computed( () => dataProcessor(rawData) )
-
-
 
 
 // methods //
@@ -84,14 +68,13 @@ function dataProcessor(raw){
 
     if(label == "load") {
       dataObj.borderColor = "rgba(53, 89, 143, .8)"
-      dataObj.borderWidth = 4
     }
     else if(label == "rpe") {
       dataObj.borderColor = "rgba(255, 99, 71, .8)"
     } 
     else {
       dataObj.borderColor = "rgb(108, 115, 120, .5)"
-      dataObj.borderWidth = 1
+      dataObj.borderWidth = 2
     }
     
     
@@ -105,14 +88,16 @@ function dataProcessor(raw){
 
 <style lang="sass">
 .graph_card
-  width: 100%
+  width: 80%
   background-color: #fff
   height: 200px
   box-shadow: 0px 6px 10px -4px
   border-radius: 8px
+  margin: 0 auto
+  margin-bottom: 20px
 .chart
   margin: 0 auto
-  width: 80%
+  width: 100%
   // height: 200px
 
 </style>
