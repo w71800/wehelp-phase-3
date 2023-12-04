@@ -1,27 +1,59 @@
 <template lang="pug">
-#nav(@click.self="toggleNav")
+#nav(v-if="nowPath.fullPath !== '/auth'" @click.self="toggleNav")
   .container
-    .option
-      RouterLink(to="/") 回首頁
-    .option.signin(v-if="!userData" ) 
-      RouterLink(to="/auth") 登入
-    .option(v-if="userData") 
-      RouterLink(to="/dashboard") {{ userData.category == "user" ? "管理紀錄" : "管理學員紀錄"}}
-    .option(v-if="userData && userData.category == 'user'") 
-      RouterLink(to="/dialog") 動滋一下
-    .option.signout(@click="signOut" v-if="userData" ) 登出
+    .option(
+      :class="{ active: nowPath.fullPath == '/' }"
+      v-if="userData?.category !== 'coach'")
+      RouterLink(to="/") 
+        //- https://www.flaticon.com/free-icon/home_25694?term=home&page=1&position=1&origin=search&related_id=25694
+        img(v-if="isMobile && nowPath.fullPath !== '/'" src="../assets/img/nav_home.png")
+        img(v-if="isMobile && nowPath.fullPath == '/'" src="../assets/img/nav_home_active.png")
+        div 回首頁
+    .option.signin(
+      :class="{ active: nowPath.fullPath == '/auth' || nowPath.fullPath == '/' }" 
+      v-if="!userData" ) 
+      RouterLink(to="/auth") 
+        //- https://www.flaticon.com/free-icon/log-in_3596092?term=sign+in&page=1&position=8&origin=search&related_id=3596092
+        img(v-if="isMobile && nowPath.fullPath !== '/auth'" src="../assets/img/nav_signin.png")
+        img(v-if="isMobile && nowPath.fullPath == '/auth'" src="../assets/img/nav_signin_active.png")
+        div 登入
+    .option(
+      :class="{ active: nowPath.fullPath == '/dashboard' }" 
+      v-if="userData")
+      RouterLink(to="/dashboard") 
+        //- https://www.flaticon.com/free-icon/bullet-list_4052102
+        img(v-if="isMobile && nowPath.fullPath !== '/dashboard'" src="../assets/img/nav_lists.png")
+        img(v-if="isMobile && nowPath.fullPath == '/dashboard'" src="../assets/img/nav_lists_active.png")
+        div {{ userData.category == "user" ? "管理紀錄" : "管理學員紀錄"}}
+    .option(
+      :class="{ active: nowPath.fullPath == '/dialog' || nowPath.fullPath == '/newpost' }" 
+      v-if="userData && userData.category == 'user'") 
+      RouterLink(to="/dialog") 
+        //- https://www.flaticon.com/free-icon/add_2312400?term=add+list&page=1&position=7&origin=search&related_id=2312400
+        img(v-if="isMobile && nowPath.fullPath !== '/dialog'" src="../assets/img/nav_addlist.png")
+        img(v-if="isMobile && nowPath.fullPath == '/dialog'" src="../assets/img/nav_addlist_active.png")
+        div 動滋一下
+    .option.signout(@click="signOut" v-if="userData" ) 
+      //- https://www.flaticon.com/free-icon/logout_1828479?term=sign+out&page=1&position=2&origin=search&related_id=1828479
+      img(v-if="isMobile" src="../assets/img/nav_signout.png")
+      div 登出
+  .hello(v-if="userData") 哈囉！ {{ hello }}
+
+  
 
 </template>
 
 <script setup>
-import { inject, onMounted, reactive, ref } from "vue";
+import { computed, inject, onMounted, reactive, ref, watch } from "vue";
 import { useRouter, useRoute, onBeforeRouteLeave } from "vue-router";
 const router = useRouter()
-const route = useRoute()
-const navStatus = reactive({
-  now: route.path,
-})
+const nowPath = ref(useRoute())
 const userData = inject("userData")
+const hello = computed(()=>{
+  return userData.value.username
+})
+const isMobile = ref(false)
+
 
 function signOut(){
   let yes = confirm("確定要登出了嗎？")
@@ -34,12 +66,23 @@ function signOut(){
   router.push("/auth")
 }
 
+
+
 function toggleNav(e){
+  if(isMobile.value) return
+
   let navEl = e.target
   navEl.classList.toggle("expand")
 }
 
 onMounted(()=>{
+  const ww = window.innerWidth
+  if(ww <= 600){
+    isMobile.value = true
+  }
+
+  if(isMobile.value) return
+
   let container = document.querySelector("#nav .container")
   let root = document.documentElement
   let defaultHeight = window.getComputedStyle(container).height
@@ -50,7 +93,7 @@ onMounted(()=>{
 
 // onBeforeRouteLeave((to, from, next)=>{
 //   console.log("object");
-//   navStatus.now = to.path
+//   nowPath = to.path
 
 //   next()
 // })
@@ -63,19 +106,23 @@ onMounted(()=>{
 #nav
   border: 1px solid #000
   position: fixed
-  right: 20px
-  bottom: 20px
+  right: 40px
+  bottom: 40px
   width: 50px
   height: 50px
   border-radius: 50%
   background-color: #fff
+  border: 8px solid darken(#fff, 6)
+  box-shadow: 0 0.3em darken(#fff, 25)
+  transition: .3s cubic-bezier(.05,.69,.24,.97)
+  cursor: pointer
+  // overflow: hidden
   
 .container
   display: block
   width: 100px
   height: auto
-  transform: translate(-25px, -100%)
-  // border: 1px solid #000
+  transform: translate(-33px, -100%)
   transition: .3s
   overflow: hidden
 .option
@@ -87,8 +134,25 @@ onMounted(()=>{
   a
     text-decoration: none
     color: #fff
+  img
+    width: 23px
+    height: 23px
   &.signout
     color: $color_hint
+  &.active
+    pointer-events: none
+    a, div
+      color: #999
+.hello
+  width: 150px
+  position: absolute
+  bottom: -35px
+  left: 50%
+  text-align: center
+  transform: translateX(-50%)
+  font-size: 0.8rem
+  color: #eee
+
 
 #nav
   .option:not(.signout), .option:not(.signout) a
@@ -98,11 +162,45 @@ onMounted(()=>{
 
 #nav.expand
   overflow: visible
+  box-shadow: 0 0.15em darken(#fff, 25)
+  transform: translateY(.15em)
   .container
     height: var(--default-height) !important
   .option
     &.hide
       display: none
+
+@media screen and (max-width: 600px)
+  #nav
+    width: 100%
+    border-radius: 0px
+    border: none
+    transform: translate(0px, 0px)
+    right: 0
+    bottom: 0
+    height: auto
+    .container
+      width: 100%
+      height: 100% 
+      transform: translate(0px, 0px)
+      overflow: visible
+      display: flex
+      .option
+        padding: 7px 0px
+        flex: 1
+        height: 100%
+        margin: 0
+        // border: 1px solid #000
+        &.active
+          a, div
+            color: $color_primary
+      div
+        color: #888
+        font-size: 0.8rem
+      img
+        display: block
+        margin: 0 auto
+        margin-bottom: 3px
       
 
 

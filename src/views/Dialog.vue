@@ -83,12 +83,15 @@ img
   width: 80%
   margin: 0 auto
   cursor: pointer
-  *
+  a  
+    display: block
+    width: 100%
+    height: 100%
     text-decoration: none
     color: $color_primary
     font-weight: 700
   &:hover
-    animation: submitBouncing infinite 1s cubic-bezier(1,-0.01,.74,1.37)
+    // animation: submitBouncing infinite 1s cubic-bezier(1,-0.01,.74,1.37)
     background-color: $color_primary
     *
       color: #fff

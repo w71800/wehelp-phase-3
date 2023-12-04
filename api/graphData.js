@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
   let [ rows ] = await connection.query(query, values)
 
   // 遍歷所有 item 做出項目的清單架構 { 項目: {時間: ...}, ... }
-  let itemsObj = { }
+  let itemsObj = {}
   for(let row of rows){
     row.items.forEach( item => {
       itemsObj[item.item] = {}
@@ -45,6 +45,7 @@ router.get("/", async (req, res) => {
   // 如果該日期清單有該 item 的話，則加入此日期，並將數據推進去
   for(let row of rows){
     let { date } = row
+    date = date.split("/").slice(1).join("/")
     
     row.items.forEach( item => {
       for(let key of Object.keys(itemsObj)){
@@ -55,10 +56,12 @@ router.get("/", async (req, res) => {
           unit: item.sets[0].unit
         }
       }
+
+      let labels = [ "times", "load", "rpe" ]
       for(set of item.sets){
-        itemsObj[item.item][date].times.push(parseInt(set.times))
-        itemsObj[item.item][date].load.push(parseInt(set.load))
-        itemsObj[item.item][date].rpe.push(parseInt(set.rpe))
+        labels.forEach( label => {
+          itemsObj[item.item][date][label].push(parseInt(set[label]))
+        })
       }
     })
   }
@@ -69,30 +72,3 @@ router.get("/", async (req, res) => {
 })
 
 module.exports = router
-
-// {
-//   item: "硬舉（槓）",
-//   data: {
-//     "2023 / 11 / 06": {
-//       times: [12, 12, 12],
-//       load: [20, 25, 30],
-//       rpe: [6, 7, 8],
-//     },
-//     "2023 / 11 / 07": {
-//       times: [12, 12, 12],
-//       load: [22, 28, 36],
-//       rpe: [7, 8, 10],
-//     },
-//     "2023 / 11 / 08": {
-//       times: [12, 12, 12],
-//       load: [23, 30, 34],
-//       rpe: [2, 2, 8],
-//     },
-//     "2023 / 11 / 10": {
-//       times: [12, 12, 12],
-//       load: [20, 21, 22],
-//       rpe: [2, 6, 8],
-//     }
-//   },
-//   unit: "kg"
-// }

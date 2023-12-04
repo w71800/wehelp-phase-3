@@ -1,7 +1,8 @@
 <script setup>
 import { onBeforeMount, onBeforeUnmount, provide, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
+const route = useRoute()
 const userData = ref(null)
 provide("userData", userData)
 
@@ -23,6 +24,7 @@ function updateUserData(e){
     })
 }
 
+
 onBeforeMount(()=>{
   userData.value = JSON.parse(localStorage.getItem("userData")) || null
 })
@@ -34,7 +36,7 @@ onBeforeUnmount(()=>{
 <template lang="pug">
 Suspense
   router-view(:userData="userData" @signin-success="updateUserData")
-Nav
+Nav(:key="userData?.id || Math.random()")
 </template>
 
 <style lang="sass">

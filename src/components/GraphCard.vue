@@ -30,8 +30,17 @@ const chartOptions = reactive({
   plugins: {
     title: {
       display: true,
+      font: {
+        size: '16px'
+      },
       text: rawData.item // 引入標題
-    }
+    },
+    legend: {
+      position: "right",
+      labels: {
+        // padding: "5px"
+      }
+  },
   },
   elements: {
     line: {
@@ -41,7 +50,6 @@ const chartOptions = reactive({
   }
 })
 const chartData = computed( () => dataProcessor(rawData) )
-
 
 // methods //
 function dataProcessor(raw){
@@ -87,7 +95,10 @@ function dataProcessor(raw){
 </script>
 
 <style lang="sass">
+@mixin splitCard($num, $gap: $gap_width)
+  width: calc( (100% - ($num - 1) * $gap) / $num )
 .graph_card
+  // +splitCard(3, 30px)
   width: 80%
   background-color: #fff
   height: 200px

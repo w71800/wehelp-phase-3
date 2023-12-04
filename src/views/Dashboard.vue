@@ -50,6 +50,7 @@
         option(v-for="student in userData.students" :value="student.id") {{ student.username }}
       img(src="../assets/img/arrow.png")
     button.filter(@click="getLists('filter')") 搜尋
+    button.filter(@click="makeGraphData") 取得平均統計
   
   #board
     .status(v-if="data.length == 0 && !firstVisited") 沒有符合條件的運動紀錄
@@ -70,8 +71,10 @@
       :class="{ inactive: !queryParams.nextPage }") {{ queryParams.nextPage? "換下頁" : "沒有下一頁囉" }}
   
   #graphs
-    <GraphCard v-for="graphData of graphDatas" :rawData="graphData" :key="graphData"/>
-    button.filter(@click="makeGraphData") 取得統計資訊
+    <TransitionGroup name="graphs">
+      <GraphCard v-for="graphData of graphDatas" :rawData="graphData" :key="graphData"/>
+    </TransitionGroup>
+    
 
 #show(v-if="Object.keys(data_show).length !== 0")
   .cross(@click="data_show = {}")
@@ -278,10 +281,7 @@ $gap_width: 20px
   margin: 0 auto
   padding-top: 30px
 button
-  cursor: pointer
-  padding: 5px 8px
-  border-radius: 3px
-  border: none
+  margin-right: 10px
 #panel
   padding-bottom: 20px
   margin-bottom: 20px
@@ -409,6 +409,11 @@ button
     // &:nth-child(2)
     //   transform: rotate(-45deg)
 
+#graphs
+  // display: flex
+  // justify-content: flex-start
+  // align-items: center
+
 #show
   .cross:hover
     .line
@@ -425,6 +430,7 @@ button
     select:focus +img
       transform: rotate(90deg)
 
+
 // RWD //
 @media screen and (max-width: 1200px)
 #panel
@@ -433,9 +439,9 @@ button
 
   
 // Vue transition //
-.list-enter-from, .list-leave-to
+.list-enter-from, .list-leave-to, .graphs-enter-from, .graphs-leave-to
   opacity: 0
-.list-enter-to, .list-leave-from
+.list-enter-to, .list-leave-from, .graphs-enter-to, .graphs-leave-from
   opacity: 1
 // .list-enter-active, .list-leave-active
 //   transition: opacity 10s ease
