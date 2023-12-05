@@ -1,5 +1,5 @@
 <template lang="pug">
-#nav(v-if="nowPath.fullPath !== '/auth'" @click.self="toggleNav")
+#nav(v-show="nowPath.fullPath !== '/auth'" @click.self="toggleNav" ref="nav")
   .container
     .option(
       :class="{ active: nowPath.fullPath == '/' }"
@@ -52,8 +52,14 @@ const userData = inject("userData")
 const hello = computed(()=>{
   return userData.value.username
 })
+const nav = ref(null)
 const isMobile = ref(false)
 
+watch(() => nowPath.value.fullPath, (newV, oldV) => {
+  if(nav.value){
+    nav.value.classList.remove("expand")
+  }
+})
 
 function signOut(){
   let yes = confirm("確定要登出了嗎？")
@@ -113,7 +119,7 @@ onMounted(()=>{
   border-radius: 50%
   background-color: #fff
   border: 8px solid darken(#fff, 6)
-  box-shadow: 0 0.3em darken(#fff, 25)
+  box-shadow: 0 0.4em darken(#fff, 25)
   transition: .3s cubic-bezier(.05,.69,.24,.97)
   cursor: pointer
   // overflow: hidden
@@ -125,6 +131,7 @@ onMounted(()=>{
   transform: translate(-33px, -100%)
   transition: .3s
   overflow: hidden
+  // box-shadow: inset 0px 0px 10px 2px rgba(black, .5)
 .option
   // border: 1px solid #000
   color: #fff
@@ -138,7 +145,7 @@ onMounted(()=>{
     width: 23px
     height: 23px
   &.signout
-    color: $color_hint
+    // color: $color_hint
   &.active
     pointer-events: none
     a, div
@@ -151,7 +158,7 @@ onMounted(()=>{
   text-align: center
   transform: translateX(-50%)
   font-size: 0.8rem
-  color: #eee
+  color: #999
 
 
 #nav
@@ -164,6 +171,9 @@ onMounted(()=>{
   overflow: visible
   box-shadow: 0 0.15em darken(#fff, 25)
   transform: translateY(.15em)
+  background-color: lighten($color_hint, 10)
+  border-color: $color_hint
+  box-shadow: 0 .15em darken($color_hint, 25), 0 0 10px 6px rgba($color_hint, .5)
   .container
     height: var(--default-height) !important
   .option

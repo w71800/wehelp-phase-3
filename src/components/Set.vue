@@ -106,25 +106,47 @@ function changeUnit(e){
         v-model="rpe" 
         @focus="changeEditing")
       input.manual(min=1 max=10 type="range" v-model="rpe" @blur="changeEditing")
-  hr
+  //- hr
 </template>
 
 <style lang="sass" scoped>
 .set
-  padding-left: 10px
-  margin-bottom: 10px
-  hr
-    width: 80%
-    background-color: #999
-    height: 1px
-    border: none
-    margin-top: 10px
+  padding: 10px 0px
+  padding-left: 40px
+  // margin-bottom: 10px
+  // border: 1px solid #000
+  &::before, &::after
+    content: ""
+    display: block
+    width: 12px
+    height: 45%
+    position: absolute
+    border-left: 2px dotted lighten(#eee, 8)
+    // background-color: lighten(#eee, 15)
+    left: 20px
+    top: 0px
+    opacity: 0.8
+  &::before
+    border-bottom: 2px dotted lighten(#eee, 8)
+  &::after
+    top: 50%
+form
+  margin-bottom: 5px
+hr
+  position: absolute
+  bottom: 0
+  width: 75%
+  background-color: #999
+  height: 1px
+  border: none
 .set_delete
   position: absolute
-  right: 50px
-  top: 0
+  left: 0px
+  top: 50%
+  transform: translateY(-50%)
   z-index: 20
   cursor: pointer
+  opacity: 0.6
   img
     width: 15px
     height: 15px
@@ -132,47 +154,78 @@ function changeUnit(e){
   display: flex
   align-items: center
   justify-content: flex-start
-  margin-bottom: 3px
+  margin-bottom: 5px
   *
     color: $color_secondary
     font-size: .8rem
   label
     margin-right: 5px
+    font-weight: 700
   input
     background: transparent
     border: none
     outline: none
   input[type="text"]
     width: 30px
+    padding-left: 5px
   .buttons
     font-size: 0
     display: none
     position: absolute
-    right: 0px
+    right: 25px
     button
-      display: inline-block
+      display: inline-flex
+      align-items: center
+      justify-content: center
       width: 20px
       height: 20px
-      font-size: 1.5rem
-      line-height: 1rem
-      border-radius: 3px
+      font-size: 1.3rem
+      border-radius: 50%
       margin-right: 10px
-      color: rgba($color_secondary, .6)
-      background-color: #fff
+      color: #666
+      background-color: #eee
       border: 1px solid rgba($color_secondary, .6)
       cursor: pointer
+      box-shadow: 0px 1px 5px -1px rgba(black, .4)
   .spans
     margin-left: 5px
-  &.load
-    input[type="text"]
-      width: 40px
-
+  &.load input[type="text"]
+    width: 50px
   
 .wrapper
   &.rpe
     input[type="range"]
-      margin-left: 10px
+      margin-left: 20px
+      -webkit-appearance: none
+      appearance: none
       display: none
+      &::-webkit-slider-thumb
+        -webkit-appearance: none
+        appearance: none
+        width: 12px
+        height: 12px
+        border-radius: 50%
+        background-color: #777
+        margin-top: -4px
+        box-shadow: 0px 1px 4px 0px rgba(black, .4)
+      &::-moz-range-thumb
+        -webkit-appearance: none
+        appearance: none
+        width: 12px
+        height: 12px
+        border-radius: 50%
+        background-color: $color_hint
+        margin-top: -4px
+      &::-webkit-slider-runnable-track
+        background-color: #eee
+        border-radius: 2px
+        height: 4px
+      &::-moz-range-track
+        border-radius: 2px
+        background-color: #eee
+        height: 4px
+         
+        
   &.load
     span
       cursor: pointer

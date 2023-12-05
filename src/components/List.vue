@@ -1,6 +1,6 @@
 <template lang="pug">
 #list(@click.self="cleanEditing")
-  .corner
+  .corner(:class="{ isFromDashboard: isFromDashBoard}")
   .top
     .date 
       span 日期：
@@ -19,6 +19,7 @@
     )
     img(v-if="!isFromDashBoard"  src='../assets/img/message_create.png')
     img(v-if="isFromDashBoard"  src='../assets/img/message_edit.png')
+    .bubble(v-if="unreadsNum !== 0") {{ unreadsNum }}
 #chat(v-if="chatIsExpand")
   .cross(@click="submitMessage")
     img(src="../assets/img/close.png")
@@ -46,9 +47,8 @@ const router = useRouter()
 let { data, isFromDashBoard } = defineProps({
   data: Object || null,
   isFromDashBoard: Boolean
- })
+})
 const { items, messages, unreads } = toRefs(data)
-
 const userData = inject("userData")
 const listActions = {
   async submit() {
@@ -90,6 +90,10 @@ const title = computed(() => {
   : `與學員 ${data.username} 的對話` 
 })
 const chatView = ref(null)
+const unreadsNum = computed(()=>{
+  return undefined || unreads.value.filter( msg => msg.userId != userData.value.id ).length
+})
+
 
 
 // methods //
@@ -159,8 +163,8 @@ function listAction(){
 
 function storeMessage(){
   let msgObj = {
-    userId: userData.value.id, // 紀錄是哪個使用者留下的
-    isSelf: true, // 紀錄是否是自己留下的（userId == 當下使用者 id？），此屬性是在從遠端抓到之後解壓縮資料時動態生成的（透過 map 之類的）
+    userId: userData.value.id,
+    isSelf: true, 
     content: nowMessage.value
   }
   
@@ -193,7 +197,6 @@ function submitMessage(){
     unreads: unreads.value
    }
 
-   console.log(submitData);
   let endpoint = import.meta.env.VITE_SERVER_URL + "/api/messages"
   return fetch(endpoint, {
     method: "PUT",
@@ -208,10 +211,8 @@ function submitMessage(){
 function clearUnreads(){
   chatIsExpand.value = !chatIsExpand.value
   unreads.value = unreads.value.filter( unread => unread.userId == userData.value.id )
+  emit("test")
 }
-
-
-
 
 
 onMounted( () => {
@@ -219,8 +220,8 @@ onMounted( () => {
     let { isSelf, ...rest } = message
     let result = { ...rest, isSelf: message.userId == userData.value.id }
     return result
-  }
-)
+    }
+  )
 })
 
 </script>
@@ -230,20 +231,33 @@ onMounted( () => {
 #list
   width: 320px
   min-width: 320px
-  // height: 650px
   background-color: $color_list
   padding: 20px
   overflow: hidden
+  background-image: url("../assets/img/texture.png")
   // border: 2px solid $color_primary
 .msg_icon
   cursor: pointer
-  opacity: 0.4
   position: absolute
   left: 8px
   bottom: 5px
   img
+    opacity: 0.4
     width: 20px
     height: 20px
+  .bubble
+    text-align: center
+    color: #fff
+    font-size: .5rem
+    line-height: 14px
+    width: 14px
+    height: 14px
+    border-radius: 50%
+    background-color: $color_hint
+    position: absolute
+    top: -7px
+    right: -7px
+    box-shadow: 0px 3px 4px 0px rgba(black, .4)
 .date
   margin-bottom: 10px
 .top
@@ -251,6 +265,9 @@ onMounted( () => {
     width: 80%
     margin: 20px auto
     margin-bottom: 10px
+    height: 1px
+    border: none
+    background-color: #999
 .btn
   display: block
   width: 100px
@@ -288,31 +305,26 @@ onMounted( () => {
   top: 0px
   right: 0px
   box-shadow: -2px 3px 5px 2px rgba(black, .4)
-  // box-shadow: -5px 5px 8px 4px rgba(black, .4)
-  &::before
-    // content: ""
-    // display: block
-    // width: 50px
-    // height: 50px
-    // position: absolute
-    // box-shadow: -3px 3px 5px 2px rgba(black, .4)
-    // top: -25px
-    // left: -25px
-    // background-color: transparent 
+  &.isFromDashboard
+    border-top: var(--corner-border) solid rgba(black, 1)
+    border-right: var(--corner-border) solid rgba(black, 1)
+
   
 .submit
   border: 1px solid #000
   position: absolute
   right: 5px
-  bottom: 5px
+  bottom: 8px
   font-size: 0.5rem
   font-weight: 500
   color: #fff
   background-color: $color_primary
+  box-shadow: 0px 2px 0px 0px darken($color_primary, 10)
   padding: 3px 5px
   cursor: pointer
   border-radius: 3px
   border: none
+  transition: .2s
 
 #chat
   // height: 400px
@@ -402,7 +414,9 @@ onMounted( () => {
 
 // function
 .submit:hover
+  transform: translateY(2px)
   color: #fff
+  box-shadow: 0px 0px 0px 0px darken($color_hint, 10)
   background-color: $color_hint
 
 #list

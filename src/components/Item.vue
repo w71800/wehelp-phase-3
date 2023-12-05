@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, toRefs, inject } from 'vue'
+import { ref, computed, toRefs, inject, onMounted } from 'vue'
 const { data, index } = defineProps(["data", "index"])
 const { item, sets } = toRefs(data)
 const thisIndex  = ref(index)
@@ -8,17 +8,43 @@ const histories = inject("histories")
 const exercises = computed( () => histories.value.map( history => history.item ) )
 const recommends = ref([])
 const chosenNum = ref(0)
+const addsetIsClicked = ref(false)
+const deletesetIsClicked = ref(false)
 const isEmpty = computed(() => {
   if(!item.value){
     return true
   }
 })
+const setsEl = ref(null)
+const setsUltimateHeight = ref(0)
+const resizeObserver = new ResizeObserver(entries => {
+  for(entries of entries){
+    let height = entries.contentRect.height
+    
+    if(addsetIsClicked.value || deletesetIsClicked.value){
+      setsUltimateHeight.value = height
+    }
+  }
+});
 
-function expendSets(e){
+function expandSets(e){
   isExpanding.value = !isExpanding.value
+  // if(!isExpanding.value){
+  //   setsEl.value.style.height = setsUltimateHeight.value + "px"
+  //   setsEl.value.style.overflow = "hidden"
+  //   setTimeout(()=>{
+  //     setsEl.value.style.height = "0px"
+  //   }, 1)
+  // }else{
+  //   setsEl.value.style.height = setsUltimateHeight.value + "px"
+  //   setTimeout(()=>{
+  //     setsEl.value.style.height = "auto"
+  //   }, 600)
+  // }
 }
 
 function addSet(e){
+  addsetIsClicked.value = true
   let newSet = {
     "times": 12,
     "load": 20,
@@ -33,10 +59,19 @@ function addSet(e){
   }
 
   data.sets.push(newSet)
+
+  setTimeout(()=>{
+    addsetIsClicked.value = false
+  }, 50)
 }
 
 function deleteSet(arg){
+  deletesetIsClicked.value = true
   sets.value.splice(arg, 1)
+
+  setTimeout(()=>{
+    deletesetIsClicked.value = false
+  }, 50)
 }
 
 function fillItem(recommend){
@@ -84,6 +119,11 @@ const vRecommendsCollapse = {
   }
 }
 
+
+onMounted(() => {
+  resizeObserver.observe(setsEl.value)
+})
+
 </script>
 
 <template lang="pug">
@@ -105,11 +145,12 @@ const vRecommendsCollapse = {
           @click="fillItem(recommend)"
           :class="{ isChosen: i == chosenNum }") {{ recommend }}
     .sets_hint {{ sets.length }} 組
-    .item_arrow(@click="expendSets")
+    .item_arrow(@click="expandSets")
       img(src="/src/assets/img/arrow.png" :class="{ expand: isExpanding }")
     .item_delete(@click="$emit('deleteItem', thisIndex)")
       img(src="/src/assets/img/delete.png")
-  .item_sets(:class="{ expand: isExpanding }")
+  .item_sets(:class="{ expand: isExpanding }" ref="setsEl")
+    //- iframe(v-sets-height-change)
     <Set v-for="(set, index) of sets" :data="set" :index="index" @delete-set="deleteSet"/>
     .btn.add_set(@click="addSet") + 加入一組
 </template>
@@ -117,26 +158,32 @@ const vRecommendsCollapse = {
 
 
 <style lang="sass" scoped>
+:root
+  --sets-height: 0px
 #item
   // border: 1px solid #000
   margin-bottom: 10px
 
 .item_info
-  border: 1px solid #000
   padding: 10px 20px
   margin-bottom: 10px
-  border-radius: 30px
-  box-shadow: 0px 3px 10px 0px rgba(#888, .7)
+  border-radius: 35px
+  box-shadow: 0px 5px 0px 0px darken(rgba(#eee, .7), 10)
+  background-color: #eee
 .item_name
 .item_input
-  height: 25px
+  color: #777
+  font-weight: 700
+  width: 80%
+  height: 30px
   background-color: transparent
   font-size: 1rem
-  padding: 3px 5px
+  padding: 10px 5px
   outline: none
+  border-radius: 5px
   border: none
   &.isEmpty
-    border: 1px solid #000
+    border: 2px solid rgba(#999, .7)
 ul.item_recommends
   width: 100%
   // 收起來用的
@@ -166,6 +213,7 @@ ul.item_recommends
   left: 50%
   transform: translateX(-50%)
   cursor: pointer
+  opacity: 0.6
   & img
     transition: .3s
     width: 20px
@@ -178,15 +226,18 @@ ul.item_recommends
   height: 0
   // border: 1px solid #000
   z-index: 1
+  transition: .5s
   &.expand
     height: auto
     overflow: visible
+
 .item_delete
   cursor: pointer
   // border: 1px solid #000
   position: absolute
   top: 5px
   right: 15px
+  opacity: 0.6
   img
     width: 15px
     height: 15px

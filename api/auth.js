@@ -60,9 +60,12 @@ async function authHandler(req, res){
   else if(req.method == "POST"){
     try{
       let { username, email, password, category } = req.body
-      let query = `INSERT into users(username, email, password, category) 
-      values(?, ?, ?, ?)`
-      let values = [ username, email, password, category ]
+      /**
+       * 先將每個註冊者的 coach_id 登記為 2
+       */
+      let query = `INSERT into users(username, email, password, category, coach_id) 
+      values(?, ?, ?, ?, ?)`
+      let values = [ username, email, password, category, 2 ]
 
       let result = await connection.query(query, values)
       response = JSON.stringify({ ok: true })

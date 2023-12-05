@@ -60,15 +60,18 @@
         v-for="list of data" 
         @click="showData(list.id)" 
         :key="list"
-        )
+        @test="test"
+      )
         img(src="../assets/img/icon.png")
         .sub.date {{ dateTransformer(list.date) }}
         .sub.part {{ list.part }}
+        .bubble(v-if="list.unreadsNum !== 0") {{ list.unreadsNum }}
     </TransitionGroup>
     button.nextPage(
       @click="getLists" 
       v-if="data.length !== 0"
-      :class="{ inactive: !queryParams.nextPage }") {{ queryParams.nextPage? "換下頁" : "沒有下一頁囉" }}
+      :class="{ inactive: !queryParams.nextPage }"
+    ) {{ queryParams.nextPage? "換下頁" : "沒有下一頁囉" }}
   
   #graphs
     <TransitionGroup name="graphs">
@@ -88,6 +91,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
+const list = ref(null)
 let { userData } = defineProps(["userData"])
 const queryParams = reactive({
   userId: null || userData?.id,
@@ -99,7 +103,6 @@ const queryParams = reactive({
 })
 const data = ref([])
 watch(() => queryParams.sort, (sort) => {
-  console.log(sort);
   if(sort == "no"){
     data.value.sort((d1, d2) => new Date(d2.created_at) - new Date(d1.created_at))
   }else{
@@ -108,40 +111,7 @@ watch(() => queryParams.sort, (sort) => {
 })
 const data_show = ref({})
 const firstVisited = ref(true)
-// const showStatus = computed(()=>{
-//   if(data.value.length == 0) return "沒有符合條件的運動紀錄"
-//   else if(!localStorage.token) return "看起來還沒<router-link to='/auth'>登入</router-link>喔！"
-// })
-const graphDatas = ref([
-  // {
-  //   item: "硬舉（槓）",
-  //   data: {
-  //     "2023 / 11 / 06": {
-  //       times: [12, 12, 12],
-  //       load: [20, 25, 30],
-  //       rpe: [6, 7, 8],
-  //     },
-  //     "2023 / 11 / 07": {
-  //       times: [12, 12, 12],
-  //       load: [22, 28, 36],
-  //       rpe: [7, 8, 10],
-  //       unit: "kg"
-  //     },
-  //     "2023 / 11 / 08": {
-  //       times: [12, 12, 12],
-  //       load: [23, 30, 34],
-  //       rpe: [2, 2, 8],
-  //       unit: "kg"
-  //     },
-  //     "2023 / 11 / 10": {
-  //       times: [12, 12, 12],
-  //       load: [20, 21, 22],
-  //       rpe: [2, 6, 8],
-  //       unit: "kg"
-  //     }
-  //   },
-  // }
-])
+const graphDatas = ref([])
 
 // methods //
 
@@ -169,7 +139,6 @@ function getLists(mode){
   queryStr += `&page=${nextPage}`
   
   let endPoint = `${import.meta.env.VITE_SERVER_URL}/api/lists?${queryStr}`
-  console.log(endPoint);
   return fetch(endPoint)
     .then( response => response.json() )
     .then( data => {
@@ -178,6 +147,10 @@ function getLists(mode){
     } )
     .then( lists => {
       data.value = data.value.concat(lists)
+      data.value = data.value.map( d => {
+        let unreadsNum = d.unreads.filter( m => m.userId != userData.id ).length
+        return { ...d, unreadsNum }
+      })
       return data.value
     })
     .catch((e)=>{
@@ -192,7 +165,10 @@ function getList(id){
 }
 
 async function showData(id){
-  data_show.value = await getList(id);
+   let result = await getList(id);
+   data_show.value = result
+
+  // data_show.value = data.value.filter( d => d.id == id )[0]
 }
 
 function dateTransformer(dateStr){
@@ -243,11 +219,6 @@ async function makeGraphData(){
   }
 }
 
-// onBeforeMount( () => {
-//   if(!userData || !localStorage.token){
-//     router.push("/auth")
-//   }
-// })
 
 
 onMounted( async () => {
@@ -362,7 +333,18 @@ button
     left: 50%
     bottom: 30px
     transform: translateX(-50%)
-
+  .bubble
+    color: #fff
+    font-size: .8rem
+    line-height: 18px
+    width: 20px
+    height: 20px
+    border-radius: 50%
+    background-color: $color_hint
+    position: absolute
+    top: -10px
+    right: -10px
+    box-shadow: 0px 3px 4px 0px rgba(black, .4)
 #board
   button.nextPage
     &.inactive
@@ -380,7 +362,7 @@ button
   position: absolute
   top: 0
   left: 0
-  background-color: rgba(black,.7)
+  background-color: rgba(black, 1)
   width: 100%
   height: 100%
   display: flex
@@ -432,10 +414,18 @@ button
 
 
 // RWD //
-@media screen and (max-width: 1200px)
-#panel
-  .wrapper
-    margin-bottom: 20px
+@media screen and (max-width: 850px)
+  #panel
+    // display: flex
+    .wrapper
+      width: 60%
+      left: 50%
+      transform: translateX(-50%)
+      margin-bottom: 20px
+    button
+      display: block
+      margin: 0 auto
+      margin-bottom: 20px
 
   
 // Vue transition //

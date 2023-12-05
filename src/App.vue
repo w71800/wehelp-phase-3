@@ -19,7 +19,10 @@ function updateUserData(e){
       userData.value = data
       localStorage.setItem("userData", JSON.stringify(userData.value))
 
-      if(userData.value.category == "user") router.push("/")
+      if(userData.value.category == "user") {
+        router.push("/")
+        console.log("");
+      }
       else if(userData.value.category == "coach") router.push("/dashboard")
     })
 }
