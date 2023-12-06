@@ -38,7 +38,7 @@
         option(value="混合" ) 混合
       img(src="../assets/img/arrow.png")
     //- 教練部分查詢學生用
-    .wrapper(v-if="userData.category == 'coach'")
+    .wrapper(v-if="userData?.category == 'coach'")
       label(for="part") 學員：
       select(
         id="part" 
@@ -50,7 +50,7 @@
         option(v-for="student in userData.students" :value="student.id") {{ student.username }}
       img(src="../assets/img/arrow.png")
     button.filter(@click="getLists('filter')") 搜尋
-    button.filter(@click="makeGraphData") 取得平均統計
+    button.filter(v-if="data.length != 0" @click="makeGraphData") 取得平均統計
   
   #board
     .status(v-if="data.length == 0 && !firstVisited") 沒有符合條件的運動紀錄
@@ -75,7 +75,7 @@
       :class="{ inactive: !queryParams.nextPage }"
     ) {{ queryParams.nextPage? "換下頁" : "沒有下一頁囉" }}
   
-  #graphs
+  #graphs(:class="{ isShown: graphDatas.length != 0 }")
     <TransitionGroup name="graphs">
       <GraphCard v-for="graphData of graphDatas" :rawData="graphData" :key="graphData"/>
     </TransitionGroup>
@@ -117,7 +117,6 @@ const firstVisited = ref(true)
 const graphDatas = ref([])
 const show = ref(null)
 const query = route.query
-console.log(query);
 
 // methods //
 
@@ -127,7 +126,7 @@ function getLists(mode){
     queryParams.nextPage = 1
     queryParams.sort = "on"
     data.value = []
-
+    graphDatas.value = []
   }
   let { userId, period, part, nextPage, studentId } = queryParams
   /**
@@ -139,7 +138,7 @@ function getLists(mode){
   if(!nextPage) return
 
   let queryStr = `id=${userId}`
-  if(userData.category == "coach") queryStr += `&studentId=${studentId}`
+  if(userData?.category == "coach") queryStr += `&studentId=${studentId}`
   if(part) queryStr += `&part=${part}`
   if(period) queryStr += `&period=${period}`
   queryStr += `&page=${nextPage}`
@@ -267,9 +266,12 @@ $gap_width: 20px
 button
   margin-right: 10px
 #panel
-  padding-bottom: 20px
+  // background-color: darken(#fff, 10)
+  padding: 20px
+  padding-bottom: 40px
+  // border-radius: 10px
   margin-bottom: 20px
-  border-bottom: 2px solid #eee
+  border-bottom: 1px solid #eee
   .wrapper
     display: inline-flex
     align-items: center
@@ -281,6 +283,7 @@ button
     padding: 5px 8px
     border-radius: 5px
     height: 50px
+    // box-shadow: inset 0px 0px 3px 3px darken(#eee, 20)
   label
     font-weight: 700
     color: #888
@@ -308,7 +311,7 @@ button
   flex-wrap: wrap
   margin-bottom: 20px
   padding-bottom: 100px
-  border-bottom: 2px solid #eee
+  // border-bottom: 2px solid #eee
   *
     text-align: center
   .status
@@ -419,9 +422,10 @@ button
     //   transform: rotate(-45deg)
 
 #graphs
-  // display: flex
-  // justify-content: flex-start
-  // align-items: center
+  padding-bottom: 30px
+  padding-top: 30px
+  &.isShown
+    border-top: 1px solid #eee
 
 #show
   .cross:hover
@@ -441,11 +445,12 @@ button
 
 
 // RWD //
-@media screen and (max-width: 850px)
+@media screen and (max-width: 1050px)
   #panel
     // display: flex
     .wrapper
       width: 60%
+      min-width: 260px
       left: 50%
       transform: translateX(-50%)
       margin-bottom: 20px
@@ -456,12 +461,13 @@ button
 
   
 // Vue transition //
+.list-enter-active, .list-leave-active, .graphs-enter-active, .graphs-leave-active
+  transition: all .4s ease
 .list-enter-from, .list-leave-to, .graphs-enter-from, .graphs-leave-to
   opacity: 0
+  transform: translateX(-20px)
 .list-enter-to, .list-leave-from, .graphs-enter-to, .graphs-leave-from
   opacity: 1
-// .list-enter-active, .list-leave-active
-//   transition: opacity 10s ease
-
+  transform: translateX(0px)
 
 </style>

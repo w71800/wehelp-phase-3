@@ -57,7 +57,7 @@ Nav(:key="route.fullPath")
 *
 
 .fade-enter-active, .fade-leave-active
-  transition: all 0.5s cubic-bezier(.25,.06,.29,1)
+  transition: all 0.4s cubic-bezier(.25,.06,.29,1)
 
 .fade-enter-from
   position: absolute

@@ -99,7 +99,7 @@ function dataProcessor(raw){
   width: calc( (100% - ($num - 1) * $gap) / $num )
 .graph_card
   // +splitCard(3, 30px)
-  width: 80%
+  width: 50%
   background-color: #fff
   height: 200px
   box-shadow: 0px 6px 10px -4px
