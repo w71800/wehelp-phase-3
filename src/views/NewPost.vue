@@ -5,7 +5,7 @@
   
 <script setup>
 import { onBeforeMount, onMounted, provide, ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router';
 const route = useRoute()
 const router = useRouter()
 const { userData } = defineProps(["userData"])
@@ -56,6 +56,11 @@ onBeforeMount(()=>{
 onMounted(() => {
   getHistories()
 })
+
+// onBeforeRouteLeave( to => {
+//   if(to == "/dashboard"){
+//   }
+// })
 
 const data = ref(newList(getDate(), part))
 </script>

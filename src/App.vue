@@ -1,10 +1,11 @@
 <script setup>
-import { onBeforeMount, onBeforeUnmount, provide, ref } from 'vue'
+import { onBeforeMount, onBeforeUnmount, provide, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 const userData = ref(null)
 provide("userData", userData)
+const useTransition = ref(true)
 
 function updateUserData(e){
   const endPoint = import.meta.env.VITE_SERVER_URL + "/api/auth"
@@ -27,6 +28,10 @@ function updateUserData(e){
     })
 }
 
+watch(() => route.fullPath, (to, from) => {
+  // useTransition.value = to !== '/dashboard'
+})
+
 
 onBeforeMount(()=>{
   userData.value = JSON.parse(localStorage.getItem("userData")) || null
@@ -38,11 +43,34 @@ onBeforeUnmount(()=>{
 
 <template lang="pug">
 Suspense
-  router-view(:userData="userData" @signin-success="updateUserData")
-Nav(:key="userData?.id || Math.random()")
+  router-view(
+    :userData="userData" 
+    @signin-success="updateUserData" 
+    v-slot="{ Component }"
+    )
+    Transition(name="fade" mode="out-in" )
+      component(:is="Component")
+Nav(:key="route.fullPath")
 </template>
 
 <style lang="sass">
 *
+
+.fade-enter-active, .fade-leave-active
+  transition: all 0.5s cubic-bezier(.25,.06,.29,1)
+
+.fade-enter-from
+  position: absolute
+  right: -100%
+.fade-enter-to
+  position: absolute
+  right: 0
+.fade-leave-from
+  position: absolute
+  left: 0
+.fade-leave-to
+  position: absolute
+  left: -100%
+  
   
 </style>

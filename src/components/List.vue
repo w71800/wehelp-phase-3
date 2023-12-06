@@ -58,9 +58,17 @@ const listActions = {
     let response = await submitList()
     
     if(response.ok){
-      router.push("/dashboard")
+      router.push(
+        { 
+          name: "dashboard", 
+          query: { 
+            part: data.part, 
+            date: data.date
+          } 
+        })
+      // router.push("/dashboard")
     } else {
-    alert(`發生錯誤：${result.error}`)
+      alert(`發生錯誤：${result.error}`)
     }
   },
   async update(){

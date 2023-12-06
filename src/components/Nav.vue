@@ -97,13 +97,6 @@ onMounted(()=>{
 
 })
 
-// onBeforeRouteLeave((to, from, next)=>{
-//   console.log("object");
-//   nowPath = to.path
-
-//   next()
-// })
-
 </script>
 
 <style lang="sass" scoped>

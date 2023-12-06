@@ -61,11 +61,13 @@
         @click="showData(list.id)" 
         :key="list"
         @test="test"
+        :class="{ latest: list.date == query.date && list.part == query.part }"
       )
         img(src="../assets/img/icon.png")
         .sub.date {{ dateTransformer(list.date) }}
         .sub.part {{ list.part }}
         .bubble(v-if="list.unreadsNum !== 0") {{ list.unreadsNum }}
+        .latest(v-if="list.date == query.date && list.part == query.part") new!
     </TransitionGroup>
     button.nextPage(
       @click="getLists" 
@@ -79,18 +81,19 @@
     </TransitionGroup>
     
 
-#show(v-if="Object.keys(data_show).length !== 0")
-  .cross(@click="data_show = {}")
-    .line
-    .line
-  <List :data="data_show" :isFromDashBoard="true"/>
+  #show(v-if="Object.keys(data_show).length !== 0" ref="show")
+    .cross(@click="data_show = {}")
+      .line
+      .line
+    <List :data="data_show" :isFromDashBoard="true"/>
   
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
+const route = useRoute()
 const list = ref(null)
 let { userData } = defineProps(["userData"])
 const queryParams = reactive({
@@ -112,6 +115,9 @@ watch(() => queryParams.sort, (sort) => {
 const data_show = ref({})
 const firstVisited = ref(true)
 const graphDatas = ref([])
+const show = ref(null)
+const query = route.query
+console.log(query);
 
 // methods //
 
@@ -165,8 +171,15 @@ function getList(id){
 }
 
 async function showData(id){
-   let result = await getList(id);
-   data_show.value = result
+  let result = await getList(id);
+  data_show.value = result
+
+  let ww = window.innerWidth
+  nextTick(() => {
+    show.value.style.width = ww + "px"
+    show.value.style.position = "fixed"
+    show.value.style.left = "0px"
+  })
 
   // data_show.value = data.value.filter( d => d.id == id )[0]
 }
@@ -313,6 +326,16 @@ button
     padding-bottom: 10px
     box-shadow: 0px 6px 10px -4px
     transition: .2s
+    .latest
+      background-color: $color_hint
+      color: #fff
+      position: absolute
+      bottom: -7px
+      right: -7px
+      font-size: 0.6rem
+      padding: 3px 5px
+      border-radius: 3px
+      box-shadow: -2px 4px 7px 0px rgba(black, .6)
   img
     object-fit: contain
     width: 50%
@@ -345,6 +368,7 @@ button
     top: -10px
     right: -10px
     box-shadow: 0px 3px 4px 0px rgba(black, .4)
+
 #board
   button.nextPage
     &.inactive
@@ -353,11 +377,13 @@ button
       // cursor: not-allowed
       pointer-events: none
   .list
+    &.latest
+      box-shadow: 0px 6px 10px -4px, 0px 0px 10px 5px rgba(#fff, .6)
     &:hover
       transform: translateY(-6px)
       box-shadow: 0px 12px 10px -4px rgba(black, .8)
-    &.latest
-      box-shadow: 0px 0px 8px 5px white
+      &.latest
+        box-shadow: 0px 12px 10px -4px rgba(black, .8), 0px 0px 10px 10px rgba(#fff, .7)
 #show
   position: absolute
   top: 0
@@ -368,6 +394,7 @@ button
   display: flex
   justify-content: center
   align-items: center
+      
   .cross
     position: absolute
     top: 20px

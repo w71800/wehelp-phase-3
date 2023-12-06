@@ -23,7 +23,7 @@ import { onMounted, ref } from "vue"
 import { onBeforeRouteLeave, useRoute } from "vue-router"
 const part = ref(null)
 
-onBeforeRouteLeave((to, from ,next) => {
+onBeforeRouteLeave((to, from, next) => {
   to.params.part = part.value
   next()
 })
