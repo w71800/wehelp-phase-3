@@ -374,11 +374,6 @@ button
 
 #board
   button.nextPage
-    &.inactive
-      color: grey
-      background-color: lignten(grey, 25)
-      // cursor: not-allowed
-      pointer-events: none
   .list
     &.latest
       box-shadow: 0px 6px 10px -4px, 0px 0px 10px 5px rgba(#fff, .6)

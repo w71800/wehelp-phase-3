@@ -16,7 +16,6 @@ router.put("/", async(req, res) => {
   let { messages, unreads, id } = req.body
   let response = null
   try {
-    console.log(messages);
     let query = `UPDATE lists SET messages = ?, unreads = ? WHERE id = ?`
     let values = [ 
       JSON.stringify(messages), 
