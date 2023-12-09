@@ -12,9 +12,9 @@ const router = useRouter()
 const { userData } = defineProps(["userData"])
 
 onBeforeMount(() => {
-  if(!userData || !localStorage.token){
-    router.push("/auth")
-  }
+  // if(!userData || !localStorage.token){
+  //   router.push("/auth")
+  // }
 })
 
 

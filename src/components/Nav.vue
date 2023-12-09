@@ -18,6 +18,14 @@
         img(v-if="isMobile && nowPath.fullPath == '/auth'" src="../assets/img/nav_signin_active.png")
         div 登入
     .option(
+      :class="{ active: nowPath.fullPath == '/dialog' || nowPath.fullPath == '/newpost' }" 
+      v-if="userData && userData.category == 'user'") 
+      RouterLink(to="/dialog") 
+        //- https://www.flaticon.com/free-icon/add_2312400?term=add+list&page=1&position=7&origin=search&related_id=2312400
+        img(v-if="isMobile && nowPath.fullPath !== '/dialog' && nowPath.fullPath !== '/newpost'" src="../assets/img/nav_addlist.png")
+        img(v-if="isMobile && (nowPath.fullPath == '/dialog' || nowPath.fullPath == '/newpost')" src="../assets/img/nav_addlist_active.png")
+        div 動滋一下
+    .option(
       :class="{ active: nowPath.fullPath == '/dashboard' }" 
       v-if="userData")
       RouterLink(to="/dashboard") 
@@ -25,14 +33,6 @@
         img(v-if="isMobile && nowPath.fullPath !== '/dashboard'" src="../assets/img/nav_lists.png")
         img(v-if="isMobile && nowPath.fullPath == '/dashboard'" src="../assets/img/nav_lists_active.png")
         div {{ userData.category == "user" ? "管理紀錄" : "管理學員紀錄"}}
-    .option(
-      :class="{ active: nowPath.fullPath == '/dialog' || nowPath.fullPath == '/newpost' }" 
-      v-if="userData && userData.category == 'user'") 
-      RouterLink(to="/dialog") 
-        //- https://www.flaticon.com/free-icon/add_2312400?term=add+list&page=1&position=7&origin=search&related_id=2312400
-        img(v-if="isMobile && nowPath.fullPath !== '/dialog'" src="../assets/img/nav_addlist.png")
-        img(v-if="isMobile && nowPath.fullPath == '/dialog'" src="../assets/img/nav_addlist_active.png")
-        div 動滋一下
     .option.signout(@click="signOut" v-if="userData" ) 
       //- https://www.flaticon.com/free-icon/logout_1828479?term=sign+out&page=1&position=2&origin=search&related_id=1828479
       img(v-if="isMobile" src="../assets/img/nav_signout.png")
@@ -72,8 +72,6 @@ function signOut(){
   router.push("/auth")
 }
 
-
-
 function toggleNav(e){
   if(isMobile.value) return
 
@@ -81,9 +79,9 @@ function toggleNav(e){
   navEl.classList.toggle("expand")
 }
 
-onMounted(()=>{
-  const ww = window.innerWidth
-  if(ww <= 600){
+function mobileInit(){
+  let ww = window.innerWidth
+  if(ww <= 871){
     isMobile.value = true
   }
 
@@ -94,6 +92,24 @@ onMounted(()=>{
   let defaultHeight = window.getComputedStyle(container).height
   root.style.setProperty("--default-height", defaultHeight)
   container.style.height = "0px"
+}
+
+
+onMounted(()=>{
+  mobileInit()
+  
+  let prevPos = 0
+  window.onscroll = () => {
+    let nowPos = window.scrollY
+    if(prevPos < nowPos){
+      nav.value.classList.add("inactive")
+    }
+    else{
+      nav.value.classList.remove("inactive")
+    }
+
+    prevPos = nowPos
+  }
 
 })
 
@@ -173,15 +189,16 @@ onMounted(()=>{
     &.hide
       display: none
 
-@media screen and (max-width: 600px)
+@media screen and (max-width: 871px)
   #nav
     width: 100%
     border-radius: 0px
     border: none
-    transform: translate(0px, 0px)
     right: 0
     bottom: 0
     height: auto
+    &.inactive
+      transform: translateY(100%)
     .container
       width: 100%
       height: 100% 
@@ -205,6 +222,4 @@ onMounted(()=>{
         margin: 0 auto
         margin-bottom: 3px
       
-
-
 </style>

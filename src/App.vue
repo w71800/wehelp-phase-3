@@ -35,6 +35,9 @@ watch(() => route.fullPath, (to, from) => {
 
 onBeforeMount(()=>{
   userData.value = JSON.parse(localStorage.getItem("userData")) || null
+  window.onscroll = () => {
+    // console.log("scroll");
+  }
 })
 onBeforeUnmount(()=>{
   localStorage.setItem("userData", JSON.stringify(userData.value)) || null

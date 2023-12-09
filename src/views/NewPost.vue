@@ -22,6 +22,7 @@ function getDate(){
 
   return `${year} / ${month} / ${day}`
 }
+
 function newList(date, part){
   let listObj = { 
     date,
@@ -33,6 +34,7 @@ function newList(date, part){
 
   return listObj
 }
+
 function getHistories(){
   let endPoint = `${ import.meta.env.VITE_SERVER_URL }/api/history?part=${ part }&id=${ userData.id }`
   return fetch(endPoint)
@@ -57,6 +59,13 @@ onMounted(() => {
   getHistories()
 })
 
+onBeforeRouteLeave(()=>{
+  const body = document.querySelector("body")
+  if(body.classList.contains("listExpanding")){
+    body.classList.remove("listExpanding")
+  }
+})
+
 // onBeforeRouteLeave( to => {
 //   if(to == "/dashboard"){
 //   }
@@ -66,5 +75,6 @@ const data = ref(newList(getDate(), part))
 </script>
   
 <style lang="sass" scoped>
-
+.container
+  display: block
 </style>

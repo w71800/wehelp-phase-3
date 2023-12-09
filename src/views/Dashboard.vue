@@ -85,13 +85,13 @@
     .cross(@click="data_show = {}")
       .line
       .line
-    <List :data="data_show" :isFromDashBoard="true"/>
+    <List :data="data_show" :isFromDashBoard="true" ref="listEL"/>
   
 </template>
 
 <script setup>
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 const list = ref(null)
@@ -116,6 +116,7 @@ const data_show = ref({})
 const firstVisited = ref(true)
 const graphDatas = ref([])
 const show = ref(null)
+const listEL = ref(null)
 const query = route.query
 
 // methods //
@@ -172,15 +173,24 @@ function getList(id){
 async function showData(id){
   let result = await getList(id);
   data_show.value = result
-
-  let ww = window.innerWidth
-  nextTick(() => {
-    show.value.style.width = ww + "px"
-    show.value.style.position = "fixed"
-    show.value.style.left = "0px"
-  })
+  // let ww = window.innerWidth
+  // nextTick(() => {
+  //   show.value.style.width = ww + "px"
+  //   show.value.style.position = "fixed"
+  //   show.value.style.left = "0px"
+  // })
 
   // data_show.value = data.value.filter( d => d.id == id )[0]
+  
+  /**
+   * 這段的用途：
+   * 在抓到該清單的並且要渲染時，如果一開始就會超出高度，就將 show 的高度設為 auto
+   */
+  let wh = window.innerHeight
+  let listBottom = listEL.value?.getBoundingClientRect().bottom
+  if(listBottom > wh){
+    show.value.classList.add("listExpanding")
+  }
 }
 
 function dateTransformer(dateStr){
@@ -234,8 +244,14 @@ async function makeGraphData(){
 
 
 onMounted( async () => {
-  // console.log("dashboard mounted");
   data.value = await getLists()
+})
+
+onBeforeRouteLeave(()=>{
+  const body = document.querySelector("body")
+  if(body.classList.contains("listExpanding")){
+    body.classList.remove("listExpanding")
+  }
 })
 
 </script>
@@ -389,9 +405,12 @@ button
   background-color: rgba(black, 1)
   width: 100%
   height: 100%
-  display: flex
-  justify-content: center
-  align-items: center
+  // display: flex
+  // justify-content: center
+  // align-items: center
+  display: block
+  &.listExpanding
+    height: auto
       
   .cross
     position: absolute

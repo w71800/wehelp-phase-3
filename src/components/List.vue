@@ -1,5 +1,5 @@
 <template lang="pug">
-#list(@click.self="cleanEditing")
+#list(@click.self="cleanEditing" ref="list")
   .corner(:class="{ isFromDashboard: isFromDashBoard}")
   .top
     .date 
@@ -12,7 +12,9 @@
   .bottom
     .items
       .btn.add_item(@click="addItem") + 加入新項目
-      <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem"/>
+      <TransitionGroup name="item">
+        <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem" :key="item.keyID"/>
+      </TransitionGroup>
   .submit(@click="listAction" ) 提交
   .msg_icon(
     @click="clearUnreads"
@@ -98,6 +100,7 @@ const title = computed(() => {
   : `與學員 ${data.username} 的對話` 
 })
 const chatView = ref(null)
+const list = ref(null)
 const unreadsNum = computed(()=>{
   return undefined || unreads.value.filter( msg => msg.userId != userData.value.id ).length
 })
@@ -109,6 +112,7 @@ function addItem(){
   let item = {
     item: null,
     sets: [],
+    keyID: Math.random()
   }
 
   items.value.push(item)
@@ -223,6 +227,8 @@ function clearUnreads(){
 }
 
 
+
+
 onMounted( () => {
   messages.value = messages.value.map( message => {
     let { isSelf, ...rest } = message
@@ -230,6 +236,33 @@ onMounted( () => {
     return result
     }
   )
+
+  const observer = new ResizeObserver(() => {
+  let wh = window.innerHeight
+  const showEl = list.value.parentElement
+  const body = document.querySelector("body")
+  let listBottom = list.value?.getBoundingClientRect()
+    ? list.value.getBoundingClientRect().bottom
+    : 0
+  
+  if(listBottom == 0) return
+  
+  if(listBottom > wh){
+    list.value.classList.add("expanding")
+    body.classList.add("listExpanding")
+    
+    if(!showEl) return
+    showEl.classList.add("listExpanding")
+  } else {
+    list.value.classList.remove("expanding")
+    body.classList.remove("listExpanding")
+
+    if(!showEl) return
+    showEl.classList.remove("listExpanding")
+  }
+})
+
+  observer.observe(list.value)
 })
 
 </script>
@@ -243,7 +276,16 @@ onMounted( () => {
   padding: 20px
   overflow: hidden
   background-image: url("../assets/img/texture.png")
-  // border: 2px solid $color_primary
+  transition: .3s
+  // 新置中方法
+  margin: 0 auto
+  margin-bottom: 60px 
+  top: 50%
+  transform: translateY(-50%)
+  &.expanding
+    top: 0
+    transform: translateY(30px)
+
 .msg_icon
   cursor: pointer
   position: absolute
@@ -440,4 +482,19 @@ onMounted( () => {
     img
       transform: translate(1px, -1px)
 
+// Vue Transition //
+
+.item-enter-active, .item-leave-active
+  transition: all .3s ease
+
+.item-enter-from
+  opacity: 0
+  transform: translateX(-20px)
+.item-enter-to
+  transform: translateX(0px)
+.item-leave-from
+  transform: translateX(0px)
+.item-leave-to
+  opacity: 0  
+  transform: translateX(20px)
 </style>
