@@ -1,44 +1,48 @@
 <template lang="pug">
-#list(@click.self="cleanEditing" ref="list")
-  .corner(:class="{ isFromDashboard: isFromDashBoard}")
-  .top
-    .date 
-      span 日期：
-      span {{ data.date }}
-    .part
-      span 部位：
-      span {{ data.part }}
-  hr
-  .bottom
-    .items
-      .btn.add_item(@click="addItem") + 加入新項目
-      <TransitionGroup name="item">
-        <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem" :key="item.keyID"/>
-      </TransitionGroup>
-  .submit(@click="listAction" ) 提交
-  .msg_icon(
-    @click="clearUnreads"
-    )
-    img(v-if="!isFromDashBoard"  src='../assets/img/message_create.png')
-    img(v-if="isFromDashBoard"  src='../assets/img/message_edit.png')
-    .bubble(v-if="unreadsNum !== 0") {{ unreadsNum }}
-#chat(v-if="chatIsExpand")
-  .cross(@click="submitMessage")
-    img(src="../assets/img/close.png")
-  .view(ref="chatView")
-    .title {{ title }}
-    .messages
-      .message(
-        v-for="message of messages"
-        :class="message.isSelf ? 'self' : 'other'"
+.list_wrapper
+  #list(@click.self="cleanEditing" ref="list")
+    .corner(:class="{ isFromDashboard: isFromDashBoard}")
+    .top
+      .date 
+        span 日期：
+        span {{ data.date }}
+      .part
+        span 部位：
+        span {{ data.part }}
+    hr
+    .bottom
+      .items
+        .btn.add_item(@click="addItem") + 加入新項目
+        //- <TransitionGroup name="item">
+        //-   <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem" :key="item.keyID"/>
+        //- </TransitionGroup>
+        <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem"/>
+    .submit(@click="listAction" ) 提交
+    .msg_icon(
+      @click="clearUnreads"
       )
-        span {{ message.content }}
-  .wrapper
-    textarea(
-      v-model="nowMessage" 
-      placeholder="請輸入訊息")
-    .submit(@click="storeMessage" )
-      img(src="../assets/img/send.png")
+      img(v-if="!isFromDashBoard"  src='../assets/img/message_create.png')
+      img(v-if="isFromDashBoard"  src='../assets/img/message_edit.png')
+      .bubble(v-if="unreadsNum !== 0") {{ unreadsNum }}
+  <Transition name="chat">
+    #chat(v-if="chatIsExpand")
+      .cross(@click="submitMessage")
+        img(src="../assets/img/close.png")
+      .view(ref="chatView")
+        .title {{ title }}
+        .messages
+          .message(
+            v-for="message of messages"
+            :class="message.isSelf ? 'self' : 'other'"
+          )
+            span {{ message.content }}
+      .wrapper
+        textarea(
+          v-model="nowMessage" 
+          placeholder="請輸入訊息")
+        .submit(@click="storeMessage" )
+          img(src="../assets/img/send.png")
+    </Transition>
 
 </template>
 
@@ -223,7 +227,6 @@ function submitMessage(){
 function clearUnreads(){
   chatIsExpand.value = !chatIsExpand.value
   unreads.value = unreads.value.filter( unread => unread.userId == userData.value.id )
-  emit("test")
 }
 
 
@@ -238,29 +241,29 @@ onMounted( () => {
   )
 
   const observer = new ResizeObserver(() => {
-  let wh = window.innerHeight
-  const showEl = list.value.parentElement
-  const body = document.querySelector("body")
-  let listBottom = list.value?.getBoundingClientRect()
-    ? list.value.getBoundingClientRect().bottom
-    : 0
-  
-  if(listBottom == 0) return
-  
-  if(listBottom > wh){
-    list.value.classList.add("expanding")
-    body.classList.add("listExpanding")
+    let wh = window.innerHeight
+    const showEl = list.value.parentElement.parentElement
+    const body = document.querySelector("body")
+    let listBottom = list.value?.getBoundingClientRect()
+      ? list.value.getBoundingClientRect().bottom
+      : 0
     
-    if(!showEl) return
-    showEl.classList.add("listExpanding")
-  } else {
-    list.value.classList.remove("expanding")
-    body.classList.remove("listExpanding")
+    if(listBottom == 0) return
+    
+    if(listBottom > wh){
+      list.value.classList.add("expanding")
+      body.classList.add("listExpanding")
+      
+      if(!showEl) return
+      showEl.classList.add("listExpanding")
+    } else {
+      list.value.classList.remove("expanding")
+      body.classList.remove("listExpanding")
 
-    if(!showEl) return
-    showEl.classList.remove("listExpanding")
-  }
-})
+      if(!showEl) return
+      showEl.classList.remove("listExpanding")
+    }
+  })
 
   observer.observe(list.value)
 })
@@ -269,20 +272,22 @@ onMounted( () => {
 
 
 <style lang="sass" scoped>
+.list_wrapper
+  height: 100%
+  display: flex
+  align-items: center
+  justify-content: center
+
 #list
   width: 320px
   min-width: 320px
   background-color: $color_list
   padding: 20px
-  overflow: hidden
   background-image: url("../assets/img/texture.png")
   transition: .3s
-  // 新置中方法
-  margin: 0 auto
-  margin-bottom: 60px 
-  top: 50%
-  transform: translateY(-50%)
+  overflow: hidden
   &.expanding
+    margin-bottom: 60px
     top: 0
     transform: translateY(30px)
 
@@ -484,7 +489,7 @@ onMounted( () => {
 
 // Vue Transition //
 
-.item-enter-active, .item-leave-active
+.item-enter-active, .item-leave-active, .chat-enter-active, .chat-leave-active
   transition: all .3s ease
 
 .item-enter-from
@@ -497,4 +502,12 @@ onMounted( () => {
 .item-leave-to
   opacity: 0  
   transform: translateX(20px)
+
+.chat-enter-from
+  opacity: 0
+  transform: translateX(-10%)
+.chat-leave-to
+  opacity: 0
+  transform: translateX(-10%)
+
 </style>

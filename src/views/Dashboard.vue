@@ -90,6 +90,7 @@
 </template>
 
 <script setup>
+import { del } from 'express/lib/application';
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
 const router = useRouter()
@@ -119,6 +120,16 @@ const show = ref(null)
 const listEL = ref(null)
 const query = route.query
 
+
+watch(() => show.value, (newStatus, oldStatus) => {
+  let ww = window.innerWidth
+  if(newStatus){
+    let containerEl = document.querySelector(".container")
+    let delta = window.getComputedStyle(containerEl).marginLeft.split("p")[0]
+    show.value.style.width = `${ww}px`
+    show.value.style.left = `${delta}px`
+  }
+})
 // methods //
 
 function getLists(mode){
@@ -422,6 +433,7 @@ button
     display: flex
     justify-content: center
     align-items: center
+    z-index: 100
   .line
     position: absolute
     border: 1px solid white
@@ -430,10 +442,10 @@ button
     background-color: white
     transform: rotate(0deg)
     transition: .2s
-    // &:nth-child(1)
-    //   transform: rotate(45deg)  
-    // &:nth-child(2)
-    //   transform: rotate(-45deg)
+    &:nth-child(1)
+      transform: rotate(45deg)  
+    &:nth-child(2)
+      transform: rotate(-45deg)
 
 #graphs
   padding-bottom: 30px
@@ -447,10 +459,10 @@ button
       transition: .5s
       background-color: $color_hint
       border-color: $color_hint
-      &:nth-child(1)
-        transform: rotate(45deg)
-      &:nth-child(2)
-        transform: rotate(-45deg)
+      // &:nth-child(1)
+      //   transform: rotate(45deg)
+      // &:nth-child(2)
+      //   transform: rotate(-45deg)
 
 #panel
   .wrapper

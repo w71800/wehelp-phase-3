@@ -20,16 +20,17 @@
 
 <script setup>
 import { onMounted, ref } from "vue"
-import { onBeforeRouteLeave, useRoute } from "vue-router"
+import { onBeforeRouteLeave } from "vue-router"
 const part = ref(null)
 
 onBeforeRouteLeave((to, from, next) => {
+  if (!part.value) {
+    alert("沒有輸入部位，請重新輸入！")
+    return false
+  }
+  
   to.params.part = part.value
   next()
-})
-
-onMounted(()=>{
-  
 })
 </script>
 
