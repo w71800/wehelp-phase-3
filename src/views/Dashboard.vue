@@ -90,7 +90,6 @@
 </template>
 
 <script setup>
-import { del } from 'express/lib/application';
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
 const router = useRouter()
@@ -127,7 +126,7 @@ watch(() => show.value, (newStatus, oldStatus) => {
     let containerEl = document.querySelector(".container")
     let delta = window.getComputedStyle(containerEl).marginLeft.split("p")[0]
     show.value.style.width = `${ww}px`
-    show.value.style.left = `${delta}px`
+    show.value.style.left = `${-delta}px`
   }
 })
 // methods //
