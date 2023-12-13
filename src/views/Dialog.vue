@@ -24,12 +24,15 @@ import { onBeforeRouteLeave } from "vue-router"
 const part = ref(null)
 
 onBeforeRouteLeave((to, from, next) => {
-  if (!part.value) {
-    alert("沒有輸入部位，請重新輸入！")
-    return false
+  if(to.fullPath == "/newpost") {
+    if (!part.value) {
+      alert("沒有輸入部位，請重新輸入！")
+      return false
+    } else {
+      to.params.part = part.value
+    }
   }
   
-  to.params.part = part.value
   next()
 })
 </script>

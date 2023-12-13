@@ -287,9 +287,9 @@ onMounted( () => {
   transition: .3s
   overflow: hidden
   &.expanding
-    margin-bottom: 60px
+    margin-bottom: 140px
     top: 0
-    transform: translateY(30px)
+    transform: translateY(70px)
 
 .msg_icon
   cursor: pointer

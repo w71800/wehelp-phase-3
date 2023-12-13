@@ -101,10 +101,10 @@ onMounted(()=>{
   let prevPos = 0
   window.onscroll = () => {
     let nowPos = window.scrollY
-    if(prevPos < nowPos){
+    if(prevPos - nowPos < -10){
       nav.value.classList.add("inactive")
     }
-    else{
+    else if(prevPos - nowPos > 10){
       nav.value.classList.remove("inactive")
     }
 
@@ -129,7 +129,7 @@ onMounted(()=>{
   background-color: #fff
   border: 8px solid darken(#fff, 6)
   box-shadow: 0 0.4em darken(#fff, 25)
-  transition: .3s cubic-bezier(.05,.69,.24,.97)
+  transition: .8s cubic-bezier(.05,.69,.24,.97)
   cursor: pointer
   // overflow: hidden
   
@@ -198,6 +198,7 @@ onMounted(()=>{
     bottom: 0
     height: auto
     &.inactive
+      transition: .3s linear
       transform: translateY(100%)
     .container
       width: 100%
