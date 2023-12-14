@@ -201,6 +201,12 @@ async function showData(id){
   if(listBottom > wh){
     show.value.classList.add("listExpanding")
   }
+  nextTick(()=>{
+    window.scrollTo({
+      top: 0,
+    })
+    
+  })
 }
 
 function dateTransformer(dateStr){
@@ -489,6 +495,10 @@ button
   #board
     .list
       +splitList(3)
+@media screen and (max-width: 350px)
+  #board
+    .list
+      +splitList(2)
 
 
   

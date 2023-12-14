@@ -12,9 +12,10 @@ const router = useRouter()
 const { userData } = defineProps(["userData"])
 
 onBeforeMount(() => {
-  // if(!userData || !localStorage.token){
-  //   router.push("/auth")
-  // }
+  if(!userData || !localStorage.token){
+    alert("尚未登入")
+    router.push("/auth")
+  }
 })
 
 

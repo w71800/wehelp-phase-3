@@ -153,30 +153,30 @@ onMounted(()=>{
   transform: translate(-33px, -100%)
   transition: .3s
   overflow: hidden
-  // box-shadow: inset 0px 0px 10px 2px rgba(black, .5)
 .option
-  // border: 1px solid #000
-  color: #fff
   margin-bottom: 20px
   text-align: center
   cursor: pointer
   a
-    text-decoration: none
+    text-decoration: none 
+  div
     color: #fff
   svg
-    // filter: brightness(0) invert(1)
     width: 23px
     height: 23px
     path.target
       fill: #888
   &.signout
-    // color: $color_hint
+    color: $color_hint
   &.active
     pointer-events: none
+    cursor: not-allowed
     a, div
-      color: #999
+      font-weight: 700
+      color: $color_list
     svg path.target
       fill: $color_primary
+
 .hello
   width: 150px
   position: absolute
@@ -186,7 +186,6 @@ onMounted(()=>{
   transform: translateX(-50%)
   font-size: 0.8rem
   color: #999
-
 
 #nav
   .option:not(.signout), .option:not(.signout) a

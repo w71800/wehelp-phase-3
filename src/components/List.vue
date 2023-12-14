@@ -120,6 +120,14 @@ function addItem(){
   }
 
   items.value.push(item)
+  nextTick(() => {
+    let body = document.querySelector("body")
+    let nowHeight = window.getComputedStyle(body).height.split("p")[0]
+    window.scrollTo({
+      top: nowHeight,
+      behavior: "smooth"
+    })
+  })
 }
 
 function cleanEditing(e){
