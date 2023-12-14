@@ -12,6 +12,7 @@
       .wrapper
         label(for="email") 信箱
         input(
+          type="text"
           name="email" 
           id="email" 
           v-model="testCategory.email") 
@@ -32,10 +33,10 @@
       h1.title 歡迎註冊
       .wrapper
         label(for="username") 名稱
-        input(name="username" id="username")
+        input(name="username" id="username" type="text")
       .wrapper
         label(for="email") 信箱
-        input(name="email" id="email")
+        input(name="email" id="email" type="text")
       .wrapper
         label(for="password") 密碼
         input(type="password" name="password" id="password")
@@ -149,12 +150,16 @@ onMounted(()=>{
 <style lang="sass" scoped>
 .test
   position: absolute
-  top: 0
+  top: -5px
   transform: translateY(-100%)
   color: #999
   font-size: 0.8rem
   input
     margin-right: 10px
+  *
+    vertical-align: middle
+  label
+    color: #999
 
 #box
   width: 320px
@@ -171,9 +176,14 @@ h1.title
   margin-bottom: 15px
 label
   margin-right: 8px
-input
+  color: #666
+  font-weight: 700
+input[type="text"], input[type="password"]
   padding: 3px 5px
-  color: #999
+  color: #666
+  border-radius: 5px
+  border: 1px solid #666
+  width: 160px
 input[type='submit']
   cursor: pointer
   margin-top: 10px
@@ -182,6 +192,7 @@ input[type='submit']
   border: none
   padding: 5px 10px
   border-radius: 5px
+  width: auto
 
 .murmur, .changeType
   margin-bottom: 15px
@@ -191,8 +202,12 @@ input[type='submit']
   font-weight: 300
   text-decoration: underline
 .murmur
-  color: #999
-  font-weight: 300
+  position: absolute
+  bottom: -50px
+  width: 100%
+  text-align: center
+  color: #ddd
+  font-weight: 500
   font-size: 0.8rem
 .status
   color: #fff

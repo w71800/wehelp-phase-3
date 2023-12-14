@@ -350,8 +350,10 @@ button
     // border: 1px solid #000
     cursor: pointer
     max-width: 175px
+    min-width: 110px
     background-color: #fff
     border-radius: 5px
+    padding: 0px 5px
     padding-bottom: 10px
     box-shadow: 0px 6px 10px -4px
     transition: .2s
@@ -483,6 +485,11 @@ button
       display: block
       margin: 0 auto
       margin-bottom: 20px
+@media screen and (max-width: 500px)
+  #board
+    .list
+      +splitList(3)
+
 
   
 // Vue transition //
