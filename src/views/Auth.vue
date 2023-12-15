@@ -40,9 +40,9 @@
       .wrapper
         label(for="password") 密碼
         input(type="password" name="password" id="password")
-      .wrapper
+      .wrapper.category
         label(for="user") 用戶
-        input(type="radio" name="category" id="user" value="user")
+        input(type="radio" name="category" id="user" value="user" checked)
         label(for="coach") 個人教練
         input(type="radio" name="category" id="coach" value="coach")
       .wrapper 
@@ -79,10 +79,6 @@ const testCategory = computed(()=>{
       password: "0000"
     }
   }
-  // return {
-  //     email: "admin@admin",
-  //     password: "0000"
-  //   }
 })
 
 // methods //
@@ -165,8 +161,9 @@ onMounted(()=>{
   width: 320px
   background-color: #fff
   padding: 20px 0px
-  *
+  border-radius: 5px
   text-align: center
+  box-shadow: 0px 10px 10px -3px rgba(black, .5)
 form
   // border: 1px solid #000
 h1.title
@@ -193,6 +190,11 @@ input[type='submit']
   padding: 5px 10px
   border-radius: 5px
   width: auto
+.wrapper.category
+  input[type="radio"]
+    margin-right: 10px
+  label
+    font-size: .8rem
 
 .murmur, .changeType
   margin-bottom: 15px
@@ -201,6 +203,8 @@ input[type='submit']
   color: $color_primary
   font-weight: 300
   text-decoration: underline
+  font-size: .8rem
+  margin-top: 30px
 .murmur
   position: absolute
   bottom: -50px

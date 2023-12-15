@@ -2,7 +2,7 @@
 import { ref, computed, toRefs, inject, onMounted } from 'vue'
 const { data, index } = defineProps(["data", "index"])
 const { item, sets } = toRefs(data)
-const thisIndex  = ref(index)
+const keyID = data.keyID
 const isExpanding = ref(false)
 const histories = inject("histories")
 const exercises = computed( () => histories.value.map( history => history.item ) )
@@ -147,7 +147,7 @@ onMounted(() => {
     .sets_hint {{ sets.length }} 組
     .item_arrow(@click="expandSets")
       img(src="/src/assets/img/arrow.png" :class="{ expand: isExpanding }")
-    .item_delete(@click="$emit('deleteItem', thisIndex)")
+    .item_delete(@click="$emit('deleteItem', keyID)")
       img(src="/src/assets/img/delete.png")
   .item_sets(:class="{ expand: isExpanding }" ref="setsEl")
     //- iframe(v-sets-height-change)
@@ -161,6 +161,7 @@ onMounted(() => {
 :root
   --sets-height: 0px
 #item
+  width: 280px
   // border: 1px solid #000
   margin-bottom: 10px
 

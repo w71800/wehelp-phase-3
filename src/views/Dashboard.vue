@@ -8,7 +8,7 @@
         option(value=7) 一週
         option(value=14 ) 兩週
         option(value=30 ) 一個月
-      img(src="../assets/img/arrow.png")
+      //- img(@click="openSelect" src="../assets/img/arrow.png")
     .wrapper
       label(for="on") 最舊在前
       input(
@@ -36,7 +36,7 @@
         option(value="胸" ) 胸
         option(value="背" ) 背
         option(value="混合" ) 混合
-      img(src="../assets/img/arrow.png")
+      //- img(src="../assets/img/arrow.png")
     //- 教練部分查詢學生用
     .wrapper(v-if="userData?.category == 'coach'")
       label(for="part") 學員：
@@ -48,7 +48,7 @@
         )
         option(value="null" disabled) 學員名稱
         option(v-for="student in userData.students" :value="student.id") {{ student.username }}
-      img(src="../assets/img/arrow.png")
+      //- img(src="../assets/img/arrow.png")
     button.filter(@click="getLists('filter')") 搜尋
     button.filter(v-if="data.length != 0" @click="makeGraphData") 取得平均統計
   
@@ -257,7 +257,11 @@ async function makeGraphData(){
   }
 }
 
-
+function openSelect(e){
+  let select = e.target.previousSibling
+  if(select.tagName == "SELECT"){
+  }
+}
 
 onMounted( async () => {
   data.value = await getLists()

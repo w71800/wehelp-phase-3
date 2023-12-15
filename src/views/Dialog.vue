@@ -11,7 +11,7 @@
         option(value="胸") 胸
         option(value="背") 背
         option(value="混合") 混合
-      img(src="../assets/img/arrow.png")
+      //- img(src="../assets/img/arrow.png")
     .submit
       RouterLink(to="/newpost") 開始動滋！
 
@@ -52,7 +52,7 @@ onBeforeRouteLeave((to, from, next) => {
   padding: 20px 15px
   border-radius: 5px
 h1.title
-  color: #888
+  color: $color_primary
   font-weight: 700
   text-align: center
 .wrapper
@@ -69,6 +69,7 @@ img
   transition: .3s
   transform: rotate(-90deg)
 label
+  color: $color_secondary
   font-size: 1.2rem
 select
   width: 150px

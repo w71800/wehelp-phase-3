@@ -13,10 +13,10 @@
     .bottom
       .items
         .btn.add_item(@click="addItem") + 加入新項目
-        //- <TransitionGroup name="item">
-        //-   <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem" :key="item.keyID"/>
-        //- </TransitionGroup>
-        <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem"/>
+        <TransitionGroup name="item">
+          <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem" :key="item.keyID"/>
+        </TransitionGroup>
+        //- <Item v-for="(item, index) of items" :data="item" :index="index" @delete-item="deleteItem"/>
     .submit(@click="listAction" ) 提交
     .msg_icon(
       @click="clearUnreads"
@@ -140,8 +140,8 @@ function cleanEditing(e){
   }
 }
 
-function deleteItem(index){
-  items.value.splice(index, 1)
+function deleteItem(id){
+  items.value = items.value.filter( item => item.keyID != id )
 }
 
 function submitList(){
@@ -249,16 +249,17 @@ onMounted( () => {
   )
 
   const observer = new ResizeObserver(() => {
-    let wh = window.innerHeight
-    const showEl = list.value.parentElement.parentElement
+    const showEl = list.value.parentElement?.parentElement
     const body = document.querySelector("body")
+    let wh = window.innerHeight
+    let listHeight = window.getComputedStyle(list.value).height.split("p")[0]
     let listBottom = list.value?.getBoundingClientRect()
       ? list.value.getBoundingClientRect().bottom
       : 0
     
     if(listBottom == 0) return
     
-    if(listBottom > wh){
+    if((listBottom || listHeight) > wh){
       list.value.classList.add("expanding")
       body.classList.add("listExpanding")
       
@@ -280,6 +281,8 @@ onMounted( () => {
 
 
 <style lang="sass" scoped>
+// .items
+//   border: 1px solid red
 .list_wrapper
   height: 100%
   display: flex
@@ -292,7 +295,7 @@ onMounted( () => {
   background-color: $color_list
   padding: 20px
   background-image: url("../assets/img/texture.png")
-  transition: .3s
+  transition: .5s
   overflow: hidden
   &.expanding
     margin-bottom: 140px
@@ -497,19 +500,25 @@ onMounted( () => {
 
 // Vue Transition //
 
-.item-enter-active, .item-leave-active, .chat-enter-active, .chat-leave-active
+.item-move, .item-leave-active, .item-enter-active, .chat-enter-active, .chat-leave-active
   transition: all .3s ease
+.item-leave-active
+  position: absolute
+  // transform-origin: 50% calc(50% - 47.63px)
+  transition-duration: .5s
+  // transition-timing-function: cubic-bezier(.25,-0.92,.99,.42)
 
 .item-enter-from
   opacity: 0
-  transform: translateX(-20px)
-.item-enter-to
-  transform: translateX(0px)
+  // transform: translateX(-100px)
+  transform: scale(.3)
 .item-leave-from
-  transform: translateX(0px)
+  
 .item-leave-to
   opacity: 0  
-  transform: translateX(20px)
+  // transform: translate(100px, -47.63px)
+  transform: translate(100px, -20px)
+  // transform: translate(100px, 0px)
 
 .chat-enter-from
   opacity: 0
