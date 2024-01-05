@@ -253,13 +253,12 @@ onMounted( () => {
     const body = document.querySelector("body")
     let wh = window.innerHeight
     let listHeight = window.getComputedStyle(list.value).height.split("p")[0]
-    let listBottom = list.value?.getBoundingClientRect()
-      ? list.value.getBoundingClientRect().bottom
-      : 0
+    // let listBottom = list.value?.getBoundingClientRect()
+    //   ? list.value.getBoundingClientRect().bottom
+    //   : 0
     
-    if(listBottom == 0) return
     
-    if((listBottom || listHeight) > wh){
+    if(listHeight > wh){
       list.value.classList.add("expanding")
       body.classList.add("listExpanding")
       
