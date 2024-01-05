@@ -11,17 +11,22 @@
 
 ### 特色功能展示
 -  新增運動項目時的建議提示
-![](https://i.imgur.com/wi4rdHF.gif)
-- 自動代入上一組紀錄
-![](https://i.imgur.com/BIndUoK.gif)
-- 可直觀地調整數值
-![](https://i.imgur.com/C6FHCMD.gif)
-- 留言給合作教練
-![](https://i.imgur.com/5BqXTf7.gif)
-- 乾淨俐落的 Dashboard（含搜尋與 sorting 功能）
-![](https://i.imgur.com/AAW3jD6.gif)
-- 一鍵生成運動數據統計圖
-![](https://i.imgur.com/efddDil.gif)
+  ![](https://i.imgur.com/wi4rdHF.gif)
+
+- 自動代入上一組紀錄  
+  ![](https://i.imgur.com/BIndUoK.gif)
+
+- 可直觀地調整數值  
+  ![](https://i.imgur.com/C6FHCMD.gif)
+ 
+- 留言給合作教練  
+  ![](https://i.imgur.com/5BqXTf7.gif)
+
+- 乾淨俐落的 Dashboard（含搜尋與 sorting 功能）  
+  ![](https://i.imgur.com/AAW3jD6.gif)
+
+- 一鍵生成運動數據統計圖  
+  ![](https://i.imgur.com/efddDil.gif)
 
 ## 技術面介紹
 （製作中...）
