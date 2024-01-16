@@ -1,5 +1,5 @@
 # Training Keeper - 動滋小管家
-![](https://i.imgur.com/8jd8QX5.png)
+![](https://i.imgur.com/h7lUc6T.png)
 ## 簡介
 是一款使用 Vue.js 開發的網頁應用程式，是 WeHelp Bootcamp 的個人獨立專案。透過其巧妙設計的使用者介面和使用者體驗，它能夠協助記錄運動歷程。以下是一些功能和技術細節，包括：
 
