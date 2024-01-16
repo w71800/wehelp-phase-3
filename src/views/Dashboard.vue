@@ -232,16 +232,18 @@ function getGraphData(){
   if(part) queryStr += `&part=${part}`
   if(period) queryStr += `&period=${period}`
   // queryStr += `&page=${nextPage}`
-  console.log(queryStr);
   let endPoint = `${import.meta.env.VITE_SERVER_URL}/api/graphdata?${queryStr}`
   return fetch(endPoint)
   .then( res => res.json() )
-  .then( data => data.data )
+  .then( data => data )
 }
 
 async function makeGraphData(){
   try{
     let data = await getGraphData()
+    if(!data.ok) throw new Error(data.message)
+    
+    data = data.data
     let result = []
     for(let [ item, d ] of Object.entries(data)){
       let temp = {}
@@ -253,7 +255,8 @@ async function makeGraphData(){
     graphDatas.value = result
   }
   catch(e){
-    console.log(e);
+    console.log(e.message);
+    alert(`發生了某些異常，請聯繫應用程式管理員`)
   }
 }
 
