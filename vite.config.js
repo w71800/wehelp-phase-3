@@ -31,6 +31,15 @@ export default defineConfig(({ command, mode })=>{
     },
     server: {
       host: "0.0.0.0"
-    }
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          entryFileNames: 'assets/[name].[hash].js',
+          chunkFileNames: 'assets/[name].[hash].js',
+          assetFileNames: 'assets/[name].[hash].[ext]',
+        },
+      },
+    },
   }
 })
