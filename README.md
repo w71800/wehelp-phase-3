@@ -1,7 +1,7 @@
 # Training Keeper - 動滋小管家
 ![](https://i.imgur.com/h7lUc6T.png)
 
-### Demo → https://w71800.online 
+### Demo → https://w71800.online（目前閉站維護中）
 ---
 
 ## 簡介
@@ -29,10 +29,6 @@
 - Nginx
 
 ## 特色功能展示
-✨ 新增運動項目時的建議提示  
-  
-  ![](https://i.imgur.com/wi4rdHF.gif)
-
 ✨ 自動代入上一組紀錄 
    
   ![](https://i.imgur.com/BIndUoK.gif)
