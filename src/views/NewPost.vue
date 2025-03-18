@@ -36,7 +36,8 @@ function newList(date, part){
 }
 
 function getHistories(){
-  let endPoint = `${ import.meta.env.VITE_SERVER_URL }/api/history?part=${ part }&id=${ userData.id }`
+  // let endPoint = `${ import.meta.env.VITE_SERVER_URL }/api/history?part=${ part }&id=${ userData.id }`
+  let endPoint = `/api/history?part=${ part }&id=${ userData.id }`
   return fetch(endPoint)
   .then( res => res.json() )
   .then( data => {

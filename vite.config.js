@@ -30,7 +30,14 @@ export default defineConfig(({ command, mode })=>{
       }
     },
     server: {
-      host: "0.0.0.0"
+      host: "0.0.0.0",
+      port: 5174,
+      proxy: {
+        '/api': {
+          target: `http://localhost:${env.WEB_PORT}`,
+          changeOrigin: true
+        }
+      }
     },
     build: {
       rollupOptions: {

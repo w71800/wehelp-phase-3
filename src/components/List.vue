@@ -151,8 +151,9 @@ function submitList(){
     messages: messages.value,
     unreads: unreads.value
   }
-  let endpoint = import.meta.env.VITE_SERVER_URL + "/api/list"
-  return fetch(endpoint, {
+  // let endpoint = import.meta.env.VITE_SERVER_URL + "/api/list"
+  let endpoint = "/api/list"
+  return fetch("/api/list", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -170,7 +171,8 @@ function updateList(){
     messages: messages.value,
     unreads: unreads.value
   }
-  let endpoint = import.meta.env.VITE_SERVER_URL + "/api/list"
+  // let endpoint = import.meta.env.VITE_SERVER_URL + "/api/list"
+  let endpoint = "/api/list"
   return fetch(endpoint, {
     method: "PUT",
     headers: {
@@ -221,7 +223,8 @@ function submitMessage(){
     unreads: unreads.value
    }
 
-  let endpoint = import.meta.env.VITE_SERVER_URL + "/api/messages"
+  // let endpoint = import.meta.env.VITE_SERVER_URL + "/api/messages"
+  let endpoint = "/api/messages"
   return fetch(endpoint, {
     method: "PUT",
     headers: {

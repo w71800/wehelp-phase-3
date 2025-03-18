@@ -154,7 +154,7 @@ function getLists(mode){
   if(period) queryStr += `&period=${period}`
   queryStr += `&page=${nextPage}`
   
-  let endPoint = `${import.meta.env.VITE_SERVER_URL}/api/lists?${queryStr}`
+  let endPoint = `/api/lists?${queryStr}`
   return fetch(endPoint)
     .then( response => response.json() )
     .then( data => {
@@ -174,7 +174,8 @@ function getLists(mode){
 }
 
 function getList(id){
-  let endPoint = `${import.meta.env.VITE_SERVER_URL}/api/list?id=${id}`
+  // let endPoint = `${import.meta.env.VITE_SERVER_URL}/api/list?id=${id}`
+  let endPoint = `/api/list?id=${id}`
   return fetch(endPoint)
   .then( res => res.json() )
   .then( data => data.data )
@@ -232,7 +233,8 @@ function getGraphData(){
   if(part) queryStr += `&part=${part}`
   if(period) queryStr += `&period=${period}`
   // queryStr += `&page=${nextPage}`
-  let endPoint = `${import.meta.env.VITE_SERVER_URL}/api/graphdata?${queryStr}`
+  // let endPoint = `${import.meta.env.VITE_SERVER_URL}/api/graphdata?${queryStr}`
+  let endPoint = `/api/graphdata?${queryStr}`
   return fetch(endPoint)
   .then( res => res.json() )
   .then( data => data )
