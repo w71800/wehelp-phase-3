@@ -1,7 +1,7 @@
 # Training Keeper - 動滋小管家
 ![](https://i.imgur.com/h7lUc6T.png)
 
-### Demo → https://w71800.online（目前閉站維護中）
+### Demo → https://training-keeper.zeabur.app
 ---
 
 ## 簡介
@@ -12,6 +12,7 @@
 - 採用 Vue.js 的內建元件轉場效果，以實現更順暢的使用者體驗。
 - 當取得了 MySQL 中的所有數據後，透過 Vue.js 的 ```props``` 或 ```provide/inject``` API 傳遞給元件。此外，這些數據一旦在本地端有異動之後，會由最上層的元件統一地進行 ```POST``` 或 ```PATCH``` 操作。
 - 運用 Chart.js 實現圖表功能，以視覺方式呈現運動進展。同時，所有圖表都被包裝成 Vue.js 元件，以實現更優雅的開發體驗。
+- 原先部署於 AWS EC2，而後將 experess.js 的伺服器 和 mySQL 整合部署於 Zeabur。大幅優化部署體驗
 
 ## 技術堆疊
 ### 前端  
@@ -27,12 +28,9 @@
 - MySQL
 - AWS EC2
 - Nginx
+- Zeabur
 
 ## 特色功能展示
-✨ 新增運動項目時的建議提示  
-  
-  ![](https://i.imgur.com/wi4rdHF.gif)
-
 ✨ 自動代入上一組紀錄 
    
   ![](https://i.imgur.com/BIndUoK.gif)
