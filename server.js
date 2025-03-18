@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express')
 const app = express()
 const cors = require('cors')
@@ -18,6 +20,8 @@ app.use("/api/lists", listsApi)
 app.use("/api/messages", messagesApi)
 app.use("/api/graphData", graphDataApi)
 
+const port = process.env.PORT || 3000;
+
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/dist/index.html")
 })
@@ -27,4 +31,6 @@ app.get("*", (req, res) => {
 })
 
 
-app.listen(3000)
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
